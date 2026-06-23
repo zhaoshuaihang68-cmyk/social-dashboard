@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang=`zh-CN`>
+<head>
+<meta charset=`UTF-8`>
+<meta name=`viewport` content=`width=device-width, initial-scale=1.0`>
+<title>Facebook Insights Daily Tracker</title>
+<script src=`https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js`></script>
+<style>
+:root {
+  --bg-primary: #f5f6fa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-input: #f9fafb;
+  --border: #e5e7eb;
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8e8ea0;
+  --accent: #7c3aed;
+  --accent2: #00cec9;
+  --success: #00b894;
+  --danger: #ff7675;
+  --warning: #fdcb6e;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  background: var(--bg-primary); color: var(--text-primary); min-height:100vh;
+}
+.header{
+  background: #ffffff; border-bottom:1px solid #e5e7eb;
+  padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:10px;
+}
+.header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;}
+.header .sub{font-size:0.72rem;color:var(--text-muted);display:block;}
+.main{padding:20px 28px 28px;max-width:1400px;margin:0 auto;}
+.btn{padding:8px 16px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);transition:all .2s;font-family:inherit;}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-primary:hover{background:#6d28d9;}
+.btn-secondary{background:var(--bg-input);color:var(--text-primary);}
+.btn-secondary:hover{background:#e5e7eb;}
+.btn-danger{background:transparent;color:var(--danger);border-color:var(--danger);}
+.btn-danger:hover{background:rgba(255,118,117,0.12);}
+.btn-sm{padding:5px 10px;font-size:0.7rem;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.card-header h3{font-size:0.9rem;font-weight:700;}
+.delay-banner{
+  display:flex; align-items:center; justify-content:space-between;
+  background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(155,89,182,0.04));
+  border:1px solid rgba(124,58,237,0.18); border-radius:var(--radius-sm);
+  padding:10px 18px; margin-bottom:18px; font-size:0.78rem; color:#7c3aed;
+}
+.delay-banner .banner-close{
+  background:none; border:none; color:#8e8ea0; cursor:pointer; font-size:1.1rem;
+  padding:0 4px; line-height:1; transition:color .2s;
+}
+.delay-banner .banner-close:hover{color:#1a1a2e;}
+.delay-text{color:var(--text-muted);}
+.card-header .sub{font-size:0.7rem;color:var(--text-muted);}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:18px;}
+.total-followers-card{
+  background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(155,89,182,0.05));
+  border:1.5px solid rgba(124,58,237,0.2); border-radius:var(--radius-sm);
+  padding:13px 15px; position:relative;
+}
+.total-followers-card .tf-label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+.total-followers-card .tf-value{font-size:1.5rem;font-weight:800;color:var(--text-primary);margin:4px 0;letter-spacing:-0.02em;}
+.total-followers-card .tf-sub{font-size:0.68rem;color:var(--text-muted);}
+.total-followers-card .change{font-size:0.7rem;margin-top:2px;}
+.total-followers-card .change.up{color:var(--success);}
+.total-followers-card .change.down{color:var(--danger);}
+.total-followers-card .change.flat{color:var(--text-muted);}
+
+
+.tf-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;}
+
+
+
+
+
+
+
+.metric-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;}
+.metric-card .label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+.metric-card .value{font-size:1.5rem;font-weight:800;margin:3px 0;}
+.metric-card .change{font-size:0.7rem;margin-top:2px;}
+.metric-card .change.up{color:var(--success);}
+.metric-card .change.down{color:var(--danger);}
+.metric-card .change.flat{color:var(--text-muted);}
+.period-pills{display:flex;gap:6px;margin-bottom:16px;align-items:center;}
+.period-pills .label{font-size:0.7rem;color:var(--text-muted);margin-right:6px;}
+.period-pill{padding:6px 18px;border-radius:99px;font-size:0.74rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:all .2s;font-family:inherit;}
+.period-pill:hover{border-color:var(--accent);color:var(--text-primary);}
+.period-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.platform-tabs{display:flex;gap:6px;align-items:center;margin-left:16px;}
+.platform-tab{padding:6px 16px;border-radius:99px;font-size:0.74rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:all .2s;font-family:inherit;}
+.platform-tab:hover{border-color:var(--accent);color:var(--text-primary);}
+.platform-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.period-note{font-size:0.68rem;color:var(--text-muted);margin-left:auto;}
+.summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:18px;}
+.summary-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 15px;}
+.summary-card .label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;}
+.summary-card .main-val{font-size:1.25rem;font-weight:800;margin:2px 0;}
+.summary-card .sub-val{font-size:0.7rem;color:var(--text-muted);}
+.summary-card.followers{border-left:3px solid var(--accent);border-color:#9b59b6;box-shadow:inset 0 0 30px rgba(124,58,237,0.03);}
+
+.chart-empty-guide{display:flex;align-items:center;justify-content:center;height:260px;
+  background:var(--bg-card);border:1.5px dashed var(--border);border-radius:var(--radius);margin-bottom:18px;
+  color:var(--text-muted);font-size:0.78rem;text-align:center;padding:20px;}
+.chart-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
+.chart-box h4{font-size:0.8rem;color:#4a4a6a;margin-bottom:10px;}
+.chart-wrap{position:relative;height:300px;}
+.chart-wrap.small{height:240px;}
+.chart-wrap canvas{width:100%!important;}
+.form-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+@media(max-width:900px){.form-grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr 1fr;}}
+.form-group{display:flex;flex-direction:column;gap:3px;}
+.form-group label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
+.form-group input{
+  background:var(--bg-input);border:1px solid var(--border);border-radius:7px;padding:8px 10px;
+  color:var(--text-primary);font-size:0.81rem;font-family:'SF Mono','Cascadia Code',Consolas,monospace;
+}
+.form-group input:focus{outline:none;border-color:var(--accent);}
+.btn-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.table-wrap{overflow-x:auto;max-height:420px;overflow-y:auto;}
+.data-table{width:100%;border-collapse:collapse;font-size:0.76rem;}
+.data-table th{background:#f3eeff;padding:9px 10px;text-align:left;font-weight:700;color:#5b21b6;border-bottom:2px solid #d8c9ff;position:sticky;top:0;z-index:1;white-space:nowrap;}
+.data-table td{padding:7px 10px;border-bottom:1px solid #f0f0f5;white-space:nowrap;}
+.data-table tr:hover td{background:rgba(124,58,237,0.04);}
+.data-table .num{text-align:right;font-variant-numeric:tabular-nums;}
+.empty-state{text-align:center;padding:48px 16px;color:var(--text-muted);}
+.empty-state .empty-icon{font-size:2.5rem;opacity:.3;margin-bottom:10px;}
+.empty-state p{font-size:0.82rem;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;width:92%;max-width:620px;box-shadow:var(--shadow);}
+.modal h3{margin-bottom:12px;}
+.modal textarea{width:100%;min-height:180px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text-primary);font-family:'SF Mono','Cascadia Code',Consolas,monospace;font-size:0.78rem;resize:vertical;}
+.modal .hint{font-size:0.7rem;color:var(--text-muted);margin:6px 0 12px;}
+.modal .hint code{background:#f3f4f6;padding:2px 5px;border-radius:4px;}
+.hint{margin-top:6px;font-size:0.7rem;color:var(--text-muted);}
+.hint code{background:#f3f4f6;padding:2px 5px;border-radius:4px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+.posts-section{margin-bottom:18px;}
+.posts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.posts-header h3{font-size:0.9rem;font-weight:700;}
+.posts-header select{background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text-primary);font-size:0.74rem;cursor:pointer;font-family:inherit;}
+.posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;}
+@media(max-width:760px){.posts-grid{grid-template-columns:1fr;}}
+.post-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.post-card .pc-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.post-card .pc-header .username{font-weight:700;font-size:0.82rem;}
+.post-card .pc-header .type-badge{font-size:0.63rem;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--text-muted);white-space:nowrap;text-transform:uppercase;letter-spacing:0.02em;}
+.post-card .pc-metrics{display:flex;flex-wrap:wrap;gap:6px 14px;}
+.post-card .pc-metric{display:flex;flex-direction:column;min-width:50px;}
+.post-card .pc-metric .label{font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;}
+.post-card .pc-metric .value{font-size:1.1rem;font-weight:800;color:var(--text-primary);}
+.post-card .pc-metric.total{min-width:60px;}
+.post-card .pc-metric.total .value{color:var(--accent);}
+.post-card .pc-footer{display:flex;flex-direction:column;gap:4px;}
+.post-card .pc-desc{font-size:0.71rem;color:var(--text-secondary);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.post-card .pc-link{font-size:0.68rem;}
+.post-card .pc-link a{color:var(--accent);text-decoration:none;}
+.post-card .pc-link a:hover{text-decoration:underline;}
+.posts-empty{text-align:center;padding:32px 16px;color:var(--text-muted);font-size:0.78rem;}
+.ai-section{margin-top:18px;}
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:760px){.ai-grid{grid-template-columns:1fr;}}
+.ai-insights{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;}
+.ai-insight-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;}
+.ai-insight-card .ai-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.ai-insight-card .ai-value{font-size:1.05rem;font-weight:800;color:var(--text-primary);}
+.ai-insight-card .ai-sub{font-size:0.66rem;color:var(--text-muted);margin-top:2px;}
+.ai-insight-card .ai-trend.up{color:var(--success);}
+.ai-insight-card .ai-trend.down{color:var(--danger);}
+.ai-suggestions{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;}
+.ai-suggestions .ai-title{font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.03em;}
+.ai-suggestion-item{display:flex;gap:8px;margin-bottom:8px;font-size:0.72rem;color:var(--text-secondary);line-height:1.5;align-items:flex-start;}
+.ai-suggestion-item:last-child{margin-bottom:0;}
+.ai-bullet{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:#9b59b6;margin-top:5px;}
+.ai-empty{text-align:center;padding:24px;color:var(--text-muted);font-size:0.74rem;grid-column:1/-1;}
+.ai-na{color:var(--text-muted);font-style:italic;}
+</style>
+</head>
+<body>
+
+<div class=`header`>
+  <div style=`display:flex;align-items:center;flex-wrap:wrap;gap:10px;`>
+    <div><h1 id=`pageTitle`>ins数据总览</h1><span class=`sub` id=`pageSub`>每日快照 · 趋势追踪 · 数据驱动</span></div>
+    <div class=`platform-tabs` id=`platformTabs`>
+      <button class=`platform-tab active` data-platform=`ins` onclick=`switchPlatform('ins')`>Ins</button>
+      <button class=`platform-tab` data-platform=`xhs` onclick=`switchPlatform('xhs')`>小红书</button>
+    </div>
+  </div>
+  <div>
+    <button class=`btn btn-secondary btn-sm` onclick=`exportData()`>导出 JSON</button>
+    <button class=`btn btn-secondary btn-sm` onclick=`document.getElementById('importFile').click()`>导入 JSON</button>
+    <button class=`btn btn-danger btn-sm` onclick=`clearAllData()`>清空全部</button>
+    <input type=`file` id=`importFile` accept=`.json` style=`display:none` onchange=`importBackup(event)`>
+  </div>
+</div>
+
+<div class=`main`>
+  
+  <!-- Overview Cards -->
+  <div class=`metrics-row` id=`overviewCards`></div>
+
+  <!-- Period Toggle + Summary -->
+  <div class=`period-pills`>
+    <span class=`label`>Period:</span>
+    <button class=`period-pill` data-days=`7` onclick=`setPeriod(7)`>7 Days</button>
+    <button class=`period-pill active` data-days=`30` onclick=`setPeriod(30)`>30 Days</button>
+    <button class=`period-pill` data-days=`90` onclick=`setPeriod(90)`>90 Days</button>
+    <span class=`period-note` id=`periodNote`></span>
+  </div>
+  <div class=`summary-row` id=`summaryCards`></div>
+
+  <!-- Main Trend Chart -->
+  <div class=`chart-box` id=`chartBox1`>
+    <h4 id=`chartMainTitle`>观看量 / 触达 / 互动趋势 + 新增粉丝</h4>
+    <div class=`chart-wrap` id=`chartWrap1`><canvas id=`chartMain`></canvas></div>
+    <div class=`chart-empty-guide` id=`chartGuide1` style=`display:none;`></div>
+  </div>
+
+  <!-- Profile Visits Trend Chart -->
+  <div class=`chart-box` id=`chartBox2`>
+    <h4 id=`chartAuxTitle`>主页访问趋势</h4>
+    <div class=`chart-wrap` id=`chartWrap2` style=`height:240px;`><canvas id=`chartAux2`></canvas></div>
+    <div class=`chart-empty-guide` id=`chartGuide2` style=`display:none;`></div>
+  </div>
+
+  <!-- Data Entry -->
+  <div class=`card` style=`margin-bottom:18px;`>
+    <div class=`card-header`><h3 id=`entryTitle`>添加每日快照</h3></div>
+    <div class=`form-grid`>
+      <div class=`form-group`><label>日期</label><input type=`date` id=`dsDate`></div>
+      <div class=`form-group`><label id=`lblViews`>观看量</label><input type=`number` id=`dsViews` placeholder=`0`></div>
+      <div class=`form-group`><label id=`lblReach`>触达</label><input type=`number` id=`dsReach` placeholder=`0`></div>
+      <div class=`form-group`><label id=`lblInteractions`>内容互动</label><input type=`number` id=`dsInteractions` placeholder=`0`></div>
+      <div class=`form-group`><label>链接点击</label><input type=`number` id=`dsLinkClicks` placeholder=`0`></div>
+      <div class=`form-group`><label id=`lblProfileVisits`>主页访问</label><input type=`number` id=`dsProfileVisits` placeholder=`0`></div>
+      <div class=`form-group`><label>新增粉丝</label><input type=`number` id=`dsFollows` placeholder=`0`></div>
+      <div class=`form-group`><label>粉丝总数</label><input type=`number` id=`dsTotalFollowers` placeholder=`留空`></div>
+    </div>
+    <div class=`btn-row`>
+      <button class=`btn btn-primary` onclick=`addDailySnapshot()`>添加快照</button>
+      <button class=`btn btn-secondary` onclick=`document.getElementById('csvModal').classList.add('show')`>批量导入 CSV</button>
+      <button class=`btn btn-danger btn-sm` onclick=`deleteLast()`>删除最后一条</button>
+    </div>
+    <div class=`hint`>CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code></div>
+  </div>
+
+  <!-- Data Table -->
+  <div class=`card`>
+    <div class=`card-header`><h3 id=`tableTitle`>每日记录</h3><span class=`sub` id=`recordCount`></span></div>
+    <div class=`table-wrap` id=`dsDataTable`></div>
+  </div>
+
+  <!-- Top Posts -->
+  <div class=`posts-section` style=`margin-top:18px;`>
+    <div class=`posts-header`>
+      <h3 id=`postsTitle`>热门帖子</h3>
+      <select onchange=`setPostSort(this.value)`>
+        <option value=`interactions`>排序方式: 互动量</option>
+        <option value=`views`>排序方式: 观看量</option>
+        <option value=`reach`>排序方式: 触达</option>
+      </select>
+    </div>
+    <div class=`posts-grid` id=`postsGrid`></div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div class=`ai-section` id=`aiSection`>
+    <div class=`card-header`><h3>AI 数据分析与建议</h3><span class=`sub` id=`aiPeriodLabel`></span></div>
+    <div class=`ai-grid` id=`aiGrid`></div>
+  </div>
+
+</div>
+
+<!-- CSV Import Modal -->
+<div class=`modal-overlay` id=`csvModal`>
+  <div class=`modal`>
+    <h3>批量导入每日快照 CSV</h3>
+    <div class=`hint`>CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code><br>每天一行。日期格式: YYYY-MM-DD。重复日期将被覆盖。</div>
+    <textarea id=`csvText` placeholder=`2026-06-17,6187,262,156,0,35,0,8655&#10;2026-06-16,5800,240,142,2,30,1,8650`></textarea>
+    <div class=`btn-row` style=`margin-top:12px;`>
+      <button class=`btn btn-primary` onclick=`importCSV()`>导入</button>
+      <button class=`btn btn-secondary` onclick=`closeCSVModal()`>取消</button>
+    </div>
+  </div>
+</div>
+
+<script>function init() {
+
+var STORAGE_KEY = 'fb_insights_daily_v1';
+var POSTS_KEY = 'fb_posts_data';
+var XHS_STORAGE_KEY = 'xhs_daily_data';
+var XHS_POSTS_KEY = 'xhs_posts_data';
+var data = [
+      { date: '2026-06-23', views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 1, total_followers: 8665 },
+      { date: '2026-06-22', views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 1, total_followers: 8664 },
+      { date: '2026-06-21', views: 4715, reach: 53, interactions: 191, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8663 },
+      { date: '2026-06-20', views: 4332, reach: 29, interactions: 243, linkClicks: 0, profileVisits: 21, follows: 1, total_followers: 8659 },
+      { date: '2026-06-19', views: 1600, reach: 27, interactions: 70, linkClicks: 0, profileVisits: 17, follows: 1, total_followers: 8658 },
+      { date: '2026-06-18', views: 2096, reach: 31, interactions: 94, linkClicks: 0, profileVisits: 22, follows: 1, total_followers: 8657 },
+      { date: '2026-06-17', views: 2301, reach: 71, interactions: 79, linkClicks: 0, profileVisits: 20, follows: 1, total_followers: 8656 },
+      { date: '2026-06-16', views: 6187, reach: 262, interactions: 156, linkClicks: 0, profileVisits: 35, follows: 0, total_followers: 8655 },
+      { date: '2026-06-15', views: 3762, reach: 65, interactions: 171, linkClicks: 0, profileVisits: 73, follows: 0, total_followers: 8655 },
+      { date: '2026-06-14', views: 1659, reach: 82, interactions: 85, linkClicks: 0, profileVisits: 46, follows: 4, total_followers: 8655 },
+      { date: '2026-06-13', views: 1245, reach: 219, interactions: 55, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8651 },
+      { date: '2026-06-12', views: 1274, reach: 169, interactions: 56, linkClicks: 0, profileVisits: 43, follows: 5, total_followers: 8647 },
+      { date: '2026-06-11', views: 1687, reach: 130, interactions: 55, linkClicks: 0, profileVisits: 194, follows: 4, total_followers: 8642 },
+      { date: '2026-06-10', views: 1780, reach: 116, interactions: 64, linkClicks: 0, profileVisits: 44, follows: 6, total_followers: 8638 },
+      { date: '2026-06-09', views: 2928, reach: 136, interactions: 155, linkClicks: 0, profileVisits: 57, follows: 8, total_followers: 8632 },
+      { date: '2026-06-08', views: 2392, reach: 115, interactions: 121, linkClicks: 0, profileVisits: 55, follows: 10, total_followers: 8624 },
+      { date: '2026-06-07', views: 1823, reach: 84, interactions: 123, linkClicks: 0, profileVisits: 24, follows: 6, total_followers: 8614 },
+      { date: '2026-06-06', views: 1931, reach: 238, interactions: 116, linkClicks: 0, profileVisits: 26, follows: 5, total_followers: 8608 },
+      { date: '2026-06-05', views: 2833, reach: 244, interactions: 126, linkClicks: 0, profileVisits: 39, follows: 9, total_followers: 8603 },
+      { date: '2026-06-04', views: 2993, reach: 214, interactions: 169, linkClicks: 0, profileVisits: 61, follows: 11, total_followers: 8594 },
+      { date: '2026-06-03', views: 6436, reach: 61, interactions: 293, linkClicks: 0, profileVisits: 71, follows: 6, total_followers: 8583 },
+      { date: '2026-06-02', views: 2019, reach: 225, interactions: 100, linkClicks: 0, profileVisits: 85, follows: 5, total_followers: 8577 },
+      { date: '2026-06-01', views: 878, reach: 23, interactions: 34, linkClicks: 0, profileVisits: 27, follows: 5, total_followers: 8572 },
+      { date: '2026-05-31', views: 1307, reach: 29, interactions: 61, linkClicks: 0, profileVisits: 24, follows: 1, total_followers: 8567 },
+      { date: '2026-05-30', views: 1341, reach: 88, interactions: 65, linkClicks: 0, profileVisits: 13, follows: 1, total_followers: 8566 },
+      { date: '2026-05-29', views: 1662, reach: 446, interactions: 52, linkClicks: 0, profileVisits: 104, follows: 5, total_followers: 8565 },
+      { date: '2026-05-28', views: 1462, reach: 82, interactions: 61, linkClicks: 0, profileVisits: 34, follows: 6, total_followers: 8560 },
+      { date: '2026-05-27', views: 2190, reach: 88, interactions: 75, linkClicks: 0, profileVisits: 36, follows: 5, total_followers: 8554 },
+      { date: '2026-05-26', views: 2457, reach: 182, interactions: 81, linkClicks: 0, profileVisits: 37, follows: 8, total_followers: 8549 },
+      { date: '2026-05-25', views: 3514, reach: 286, interactions: 141, linkClicks: 0, profileVisits: 51, follows: null, total_followers: 8541 }
+    ];
+  // --- Merge localStorage with preload data (preload wins for same date) ---
+  var savedData = localStorage.getItem(STORAGE_KEY);
+  if (savedData) {
+    try {
+      var parsed = JSON.parse(savedData);
+      var preloadDates = {};
+      for (var pi = 0; pi < data.length; pi++) {
+        preloadDates[data[pi].date] = true;
+      }
+      var merged = [];
+      for (var li = 0; li < parsed.length; li++) {
+        if (!preloadDates[parsed[li].date]) {
+          merged.push(parsed[li]);
+        }
+      }
+      // Append localStorage-only entries, then sort
+      data = data.concat(merged);
+      data.sort(function(a, b) { return b.date.localeCompare(a.date); });
+    } catch (e) { console.warn('merge localStorage failed:', e); }
+  }
+
+  // Compute follows from daily total_followers difference (差值法)
+  for (var di = 0; di < data.length; di++) {
+    var cur = data[di];
+    var yesterday = di + 1 < data.length ? data[di + 1] : null;
+    if (cur.total_followers !== null && cur.total_followers !== undefined &&
+        yesterday && yesterday.total_followers !== null && yesterday.total_followers !== undefined) {
+      data[di].follows = cur.total_followers - yesterday.total_followers;
+    }
+  }
+    save();
+  renderAll();
+  var today = new Date();
+  document.getElementById('dsDate').value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  // Initialize Ins data as primary
+  insData = data.slice();
+  // Preload XHS 30-day real data (from xiaohongshu_30days_all_metrics.xlsx)
+  xhsData = [{`date`:`2026-06-22`,`views`:19,`reach`:403,`interactions`:3,`linkClicks`:0,`profileVisits`:4,`follows`:0,`total_followers`:558},{`date`:`2026-06-21`,`views`:3,`reach`:72,`interactions`:1,`linkClicks`:0,`profileVisits`:2,`follows`:0,`total_followers`:558},{`date`:`2026-06-20`,`views`:3,`reach`:72,`interactions`:1,`linkClicks`:0,`profileVisits`:2,`follows`:0,`total_followers`:558},{`date`:`2026-06-19`,`views`:5,`reach`:60,`interactions`:0,`linkClicks`:0,`profileVisits`:0,`follows`:1,`total_followers`:558},{`date`:`2026-06-18`,`views`:17,`reach`:123,`interactions`:1,`linkClicks`:0,`profileVisits`:2,`follows`:0,`total_followers`:558},{`date`:`2026-06-17`,`views`:10,`reach`:118,`interactions`:0,`linkClicks`:0,`profileVisits`:2,`follows`:1,`total_followers`:558},{`date`:`2026-06-16`,`views`:29,`reach`:263,`interactions`:8,`linkClicks`:0,`profileVisits`:8,`follows`:0,`total_followers`:558},{`date`:`2026-06-15`,`views`:37,`reach`:412,`interactions`:5,`linkClicks`:0,`profileVisits`:4,`follows`:0,`total_followers`:558},{`date`:`2026-06-14`,`views`:8,`reach`:120,`interactions`:1,`linkClicks`:0,`profileVisits`:3,`follows`:0,`total_followers`:558},{`date`:`2026-06-13`,`views`:37,`reach`:427,`interactions`:4,`linkClicks`:0,`profileVisits`:6,`follows`:1,`total_followers`:558},{`date`:`2026-06-12`,`views`:20,`reach`:159,`interactions`:0,`linkClicks`:0,`profileVisits`:4,`follows`:0,`total_followers`:558},{`date`:`2026-06-11`,`views`:24,`reach`:337,`interactions`:4,`linkClicks`:0,`profileVisits`:7,`follows`:0,`total_followers`:558},{`date`:`2026-06-10`,`views`:9,`reach`:103,`interactions`:0,`linkClicks`:0,`profileVisits`:1,`follows`:0,`total_followers`:558},{`date`:`2026-06-09`,`views`:13,`reach`:108,`interactions`:1,`linkClicks`:0,`profileVisits`:2,`follows`:0,`total_followers`:558},{`date`:`2026-06-08`,`views`:8,`reach`:121,`interactions`:1,`linkClicks`:0,`profileVisits`:4,`follows`:0,`total_followers`:558},{`date`:`2026-06-07`,`views`:9,`reach`:68,`interactions`:3,`linkClicks`:0,`profileVisits`:1,`follows`:0,`total_followers`:558},{`date`:`2026-06-06`,`views`:16,`reach`:168,`interactions`:0,`linkClicks`:0,`profileVisits`:4,`follows`:0,`total_followers`:558},{`date`:`2026-06-05`,`views`:102,`reach`:675,`interactions`:2,`linkClicks`:0,`profileVisits`:7,`follows`:0,`total_followers`:558},{`date`:`2026-06-04`,`views`:152,`reach`:1028,`interactions`:12,`linkClicks`:0,`profileVisits`:11,`follows`:1,`total_followers`:558},{`date`:`2026-06-03`,`views`:26,`reach`:361,`interactions`:1,`linkClicks`:0,`profileVisits`:4,`follows`:1,`total_followers`:558},{`date`:`2026-06-02`,`views`:50,`reach`:617,`interactions`:5,`linkClicks`:0,`profileVisits`:13,`follows`:0,`total_followers`:558},{`date`:`2026-06-01`,`views`:16,`reach`:181,`interactions`:1,`linkClicks`:0,`profileVisits`:3,`follows`:0,`total_followers`:558},{`date`:`2026-05-31`,`views`:8,`reach`:129,`interactions`:1,`linkClicks`:0,`profileVisits`:4,`follows`:0,`total_followers`:558},{`date`:`2026-05-30`,`views`:31,`reach`:264,`interactions`:2,`linkClicks`:0,`profileVisits`:9,`follows`:0,`total_followers`:558},{`date`:`2026-05-29`,`views`:106,`reach`:896,`interactions`:4,`linkClicks`:0,`profileVisits`:15,`follows`:0,`total_followers`:558},{`date`:`2026-05-28`,`views`:105,`reach`:805,`interactions`:5,`linkClicks`:0,`profileVisits`:14,`follows`:0,`total_followers`:558},{`date`:`2026-05-27`,`views`:31,`reach`:301,`interactions`:0,`linkClicks`:0,`profileVisits`:5,`follows`:2,`total_followers`:558},{`date`:`2026-05-26`,`views`:57,`reach`:491,`interactions`:4,`linkClicks`:0,`profileVisits`:12,`follows`:1,`total_followers`:558},{`date`:`2026-05-25`,`views`:17,`reach`:226,`interactions`:0,`linkClicks`:0,`profileVisits`:10,`follows`:0,`total_followers`:558},{`date`:`2026-05-24`,`views`:13,`reach`:103,`interactions`:0,`linkClicks`:0,`profileVisits`:3,`follows`:0,`total_followers`:558},{`date`:`2026-05-23`,`views`:16,`reach`:146,`interactions`:4,`linkClicks`:0,`profileVisits`:2,`follows`:0,`total_followers`:558},{`date`:`2026-05-22`,`views`:35,`reach`:491,`interactions`:7,`linkClicks`:0,`profileVisits`:10,`follows`:0,`total_followers`:558},{`date`:`2026-05-21`,`views`:20,`reach`:244,`interactions`:0,`linkClicks`:0,`profileVisits`:6,`follows`:0,`total_followers`:558},{`date`:`2026-05-20`,`views`:37,`reach`:386,`interactions`:6,`linkClicks`:0,`profileVisits`:13,`follows`:1,`total_followers`:558},{`date`:`2026-05-19`,`views`:132,`reach`:878,`interactions`:8,`linkClicks`:0,`profileVisits`:15,`follows`:0,`total_followers`:558}];
+  // --- Merge XHS localStorage with preload data (preload wins for same date) ---
+  var savedXhs = localStorage.getItem(XHS_STORAGE_KEY);
+  if (savedXhs) {
+    try {
+      var parsedXhs = JSON.parse(savedXhs);
+      var preloadXhsDates = {};
+      for (var px = 0; px < xhsData.length; px++) {
+        preloadXhsDates[xhsData[px].date] = true;
+      }
+      var mergedXhs = [];
+      for (var lx = 0; lx < parsedXhs.length; lx++) {
+        if (!preloadXhsDates[parsedXhs[lx].date]) {
+          mergedXhs.push(parsedXhs[lx]);
+        }
+      }
+      xhsData = xhsData.concat(mergedXhs);
+      xhsData.sort(function(a, b) { return b.date.localeCompare(a.date); });
+    } catch (e) { console.warn('merge XHS localStorage failed:', e); }
+  }
+
+  saveXhs();
+  loadPosts();
+  insPosts = posts.slice();
+  renderPosts();
+}
+init();
+</script>
+</body>
+</html>
