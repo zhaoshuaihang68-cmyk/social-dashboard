@@ -535,6 +535,16 @@ function renderCards(filtered) {
   }
   var latest = filtered[0];
   var prev = filtered.length >= 2 ? filtered[1] : null;
+  // Fallback: skip all-zero entries, find most recent day with actual data
+  if (latest && latest.views === 0 && latest.reach === 0 && latest.interactions === 0 && filtered.length > 1) {
+    for (var fi = 1; fi < filtered.length; fi++) {
+      if (filtered[fi].views > 0 || filtered[fi].reach > 0 || filtered[fi].interactions > 0) {
+        latest = filtered[fi];
+        prev = filtered.length > fi + 1 ? filtered[fi + 1] : null;
+        break;
+      }
+    }
+  }
   function chg(cur, prevVal) {
     if (prevVal === null || prevVal === undefined) return '<span class="change flat">&mdash;</span>';
     if (prevVal === 0) return cur > 0 ? '<span class="change up">New</span>' : '<span class="change flat">&mdash;</span>';
