@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Social Media Dashboard - 90-Day Combined</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-</script>
+<title>Social Media Dashboard - 90-Day</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #f8f9fc; --card: #fff; --border: #e8ecf1;
-  --text: #1a1a2e; --muted: #8e8ea0; --accent: #7c3aed;
+  --text: #1a1a2e; --muted: #8e8ea0;
   --ins: #e1306c; --xhs: #ff2442; --success: #00b894; --warning: #fdcb6e;
   --radius: 14px; --shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
@@ -20,56 +19,54 @@ body{
 }
 .header{
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color:#fff; padding:28px 36px;
+  color:#fff; padding:28px 36px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
 }
 .header h1{font-size:1.6rem;font-weight:800;letter-spacing:-0.02em;}
 .header .sub{font-size:0.78rem;opacity:0.85;margin-top:4px;}
-.main{padding:24px 36px;max-width:1400px;margin:0 auto;}
-.date-range{
-  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-  padding:14px 20px; margin-bottom:20px; display:flex; align-items:center; gap:16px;
-  flex-wrap:wrap;
+
+/* Toggle */
+.toggle-group{display:flex;gap:0;background:rgba(255,255,255,0.15);border-radius:10px;overflow:hidden;}
+.toggle-btn{
+  padding:9px 24px;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;
+  background:transparent;color:rgba(255,255,255,0.75);transition:all 0.2s;white-space:nowrap;
 }
-.date-range .label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
-.date-range .value{font-weight:700;font-size:0.85rem;}
+.toggle-btn.active{background:#fff;color:#1a1a2e;}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,0.1);}
+
+.main{padding:24px 36px;max-width:1400px;margin:0 auto;}
+
+/* Platform Header */
+.platform-title{
+  font-size:1.05rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.platform-title .dot{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.platform-title .dot.ins-dot-bg{background:var(--ins);}
+.platform-title .dot.xhs-dot-bg{background:var(--xhs);}
 
 /* Overview Cards */
 .overview-grid{
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px;
 }
 .overview-card{
   background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
   padding:16px 18px; box-shadow:var(--shadow);
 }
 .overview-card .label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
-.overview-card .value{font-size:1.6rem;font-weight:800;margin:4px 0;}
-.overview-card .breakdown{font-size:0.68rem;color:var(--muted);display:flex;gap:12px;margin-top:4px;}
-.overview-card .breakdown span{white-space:nowrap;}
-.overview-card .ins-dot{color:var(--ins);}
-.overview-card .xhs-dot{color:var(--xhs);}
+.overview-card .value{font-size:1.5rem;font-weight:800;margin:4px 0;}
 
-/* Platform Summary Row */
-.platform-row{
-  display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;
-}
-@media(max-width:800px){.platform-row{grid-template-columns:1fr;}}
-.platform-card{
+/* Platform Summary Card */
+.platform-summary{
   background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-  padding:18px 20px; box-shadow:var(--shadow);
+  padding:18px 20px; box-shadow:var(--shadow); margin-bottom:20px;
+  display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center;
 }
-.platform-card.ins{border-left:4px solid var(--ins);}
-.platform-card.xhs{border-left:4px solid var(--xhs);}
-.platform-card h3{font-size:0.9rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.platform-card .badge{
-  font-size:0.6rem;padding:2px 8px;border-radius:99px;color:#fff;font-weight:600;
+.platform-summary .ps-metric{text-align:center;}
+.platform-summary .ps-metric .ml{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+.platform-summary .ps-metric .mv{font-size:1.3rem;font-weight:700;}
+.platform-summary .followers-info{
+  margin-left:auto;font-size:0.75rem;display:flex;align-items:center;gap:6px;
 }
-.platform-card .badge.ins-bg{background:var(--ins);}
-.platform-card .badge.xhs-bg{background:var(--xhs);}
-.platform-card .mini-metrics{display:flex;flex-wrap:wrap;gap:8px 18px;}
-.platform-card .mini-metric{}
-.platform-card .mini-metric .ml{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
-.platform-card .mini-metric .mv{font-size:1.1rem;font-weight:700;}
-.platform-card .followers-row{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:0.72rem;}
+.platform-summary .followers-info strong{font-size:1rem;}
 
 /* Charts */
 .chart-section{margin-bottom:20px;}
@@ -99,62 +96,91 @@ th{
 td{padding:7px 10px;border-bottom:1px solid #f0f0f5;white-space:nowrap;}
 .num{text-align:right;font-variant-numeric:tabular-nums;}
 tr:hover td{background:rgba(124,58,237,0.04);}
-.ins-col{background:rgba(225,48,108,0.03);}
-.xhs-col{background:rgba(255,36,66,0.03);}
 .total-row td{font-weight:700;background:#faf8ff;border-top:2px solid #d8c9ff;}
 .footer{text-align:center;padding:24px;color:var(--muted);font-size:0.7rem;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+
+/* hidden */
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Social Media 90-Day Combined Dashboard</h1>
-  <div class="sub">Instagram + Xiaohongshu | March 27 - June 24, 2026 | 90 Days</div>
+  <div>
+    <h1>Social Media 90-Day Dashboard</h1>
+    <div class="sub">March 27 - June 24, 2026 | 90 Days | Instagram + Xiaohongshu</div>
+  </div>
+  <div class="toggle-group">
+    <button class="toggle-btn active" id="btnIns" onclick="switchPlatform('ins')">Instagram</button>
+    <button class="toggle-btn" id="btnXhs" onclick="switchPlatform('xhs')">Xiaohongshu</button>
+  </div>
 </div>
 
 <div class="main">
 
-  <!-- Combined Overview -->
-  <div class="overview-grid" id="overviewGrid"></div>
-
-  <!-- Platform Cards -->
-  <div class="platform-row" id="platformRow"></div>
-
-  <!-- Charts -->
-  <div class="chart-section">
-    <div class="chart-box full">
-      <h4>Daily Views Trend - Combined</h4>
-      <div class="chart-wrap tall"><canvas id="chartViewsCombined"></canvas></div>
+  <!-- Instagram Section -->
+  <div id="sectionIns">
+    <div class="platform-title"><span class="dot ins-dot-bg"></span> Instagram Overview</div>
+    <div class="overview-grid" id="overviewIns"></div>
+    <div class="platform-summary" id="summaryIns"></div>
+    <div class="chart-section">
+      <div class="chart-box full">
+        <h4>Daily Views - Instagram</h4>
+        <div class="chart-wrap tall"><canvas id="chartInsViews"></canvas></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box">
+          <h4>Reach & Interactions - Instagram</h4>
+          <div class="chart-wrap"><canvas id="chartInsReachInt"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Profile Visits - Instagram</h4>
+          <div class="chart-wrap"><canvas id="chartInsProfileVisits"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-box full">
+        <h4>Follower Growth - Instagram</h4>
+        <div class="chart-wrap tall"><canvas id="chartInsFollowers"></canvas></div>
+      </div>
     </div>
-    <div class="chart-row">
-      <div class="chart-box">
-        <h4>Reach & Interactions - Instagram</h4>
-        <div class="chart-wrap"><canvas id="chartInsReachInt"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <h4>Reach & Interactions - Xiaohongshu</h4>
-        <div class="chart-wrap"><canvas id="chartXhsReachInt"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-row">
-      <div class="chart-box">
-        <h4>Profile Visits Trend</h4>
-        <div class="chart-wrap"><canvas id="chartProfileVisits"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <h4>Follower Growth</h4>
-        <div class="chart-wrap"><canvas id="chartFollowers"></canvas></div>
-      </div>
+    <div class="data-table-section">
+      <h3>Daily Breakdown - Instagram (91 Days)</h3>
+      <div class="table-wrap" id="tableIns"></div>
     </div>
   </div>
 
-  <!-- Combined Daily Table -->
-  <div class="data-table-section">
-    <h3>90-Day Daily Breakdown (Combined)</h3>
-    <div class="table-wrap" id="dailyTable"></div>
+  <!-- Xiaohongshu Section -->
+  <div id="sectionXhs" class="hidden">
+    <div class="platform-title"><span class="dot xhs-dot-bg"></span> Xiaohongshu Overview</div>
+    <div class="overview-grid" id="overviewXhs"></div>
+    <div class="platform-summary" id="summaryXhs"></div>
+    <div class="chart-section">
+      <div class="chart-box full">
+        <h4>Daily Views - Xiaohongshu</h4>
+        <div class="chart-wrap tall"><canvas id="chartXhsViews"></canvas></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box">
+          <h4>Reach & Interactions - Xiaohongshu</h4>
+          <div class="chart-wrap"><canvas id="chartXhsReachInt"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Profile Visits - Xiaohongshu</h4>
+          <div class="chart-wrap"><canvas id="chartXhsProfileVisits"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-box full">
+        <h4>Follower Growth - Xiaohongshu</h4>
+        <div class="chart-wrap tall"><canvas id="chartXhsFollowers"></canvas></div>
+      </div>
+    </div>
+    <div class="data-table-section">
+      <h3>Daily Breakdown - Xiaohongshu (90 Days)</h3>
+      <div class="table-wrap" id="tableXhs"></div>
+    </div>
   </div>
 
   <div class="footer">
@@ -167,67 +193,101 @@ tr:hover td{background:rgba(124,58,237,0.04);}
 var insData = [{"date": "2026-03-27", "views": 549, "reach": 31, "interactions": 0, "linkClicks": 0, "profileVisits": 58, "follows": 4, "total_followers": 0}, {"date": "2026-03-28", "views": 188, "reach": 11, "interactions": 0, "linkClicks": 0, "profileVisits": 14, "follows": 2, "total_followers": 0}, {"date": "2026-03-29", "views": 243, "reach": 19, "interactions": 3, "linkClicks": 0, "profileVisits": 33, "follows": 3, "total_followers": 0}, {"date": "2026-03-30", "views": 291, "reach": 23, "interactions": 0, "linkClicks": 0, "profileVisits": 42, "follows": 3, "total_followers": 0}, {"date": "2026-03-31", "views": 283, "reach": 14, "interactions": 0, "linkClicks": 0, "profileVisits": 27, "follows": 0, "total_followers": 0}, {"date": "2026-04-01", "views": 1758, "reach": 81, "interactions": 93, "linkClicks": 0, "profileVisits": 26, "follows": 2, "total_followers": 0}, {"date": "2026-04-02", "views": 325, "reach": 10, "interactions": 7, "linkClicks": 0, "profileVisits": 21, "follows": 4, "total_followers": 0}, {"date": "2026-04-03", "views": 410, "reach": 97, "interactions": 7, "linkClicks": 0, "profileVisits": 15, "follows": 2, "total_followers": 0}, {"date": "2026-04-04", "views": 212, "reach": 52, "interactions": 2, "linkClicks": 0, "profileVisits": 19, "follows": 0, "total_followers": 0}, {"date": "2026-04-05", "views": 304, "reach": 104, "interactions": 5, "linkClicks": 0, "profileVisits": 32, "follows": 5, "total_followers": 0}, {"date": "2026-04-06", "views": 372, "reach": 38, "interactions": 8, "linkClicks": 0, "profileVisits": 15, "follows": 3, "total_followers": 0}, {"date": "2026-04-07", "views": 859, "reach": 111, "interactions": 16, "linkClicks": 0, "profileVisits": 12, "follows": 3, "total_followers": 0}, {"date": "2026-04-08", "views": 820, "reach": 473, "interactions": 9, "linkClicks": 0, "profileVisits": 11, "follows": 0, "total_followers": 0}, {"date": "2026-04-09", "views": 582, "reach": 80, "interactions": 6, "linkClicks": 0, "profileVisits": 50, "follows": 3, "total_followers": 0}, {"date": "2026-04-10", "views": 83, "reach": 6, "interactions": 5, "linkClicks": 0, "profileVisits": 8, "follows": 0, "total_followers": 0}, {"date": "2026-04-11", "views": 172, "reach": 44, "interactions": 4, "linkClicks": 0, "profileVisits": 4, "follows": 3, "total_followers": 0}, {"date": "2026-04-12", "views": 2295, "reach": 54, "interactions": 132, "linkClicks": 0, "profileVisits": 36, "follows": 2, "total_followers": 0}, {"date": "2026-04-13", "views": 15919, "reach": 43, "interactions": 1138, "linkClicks": 0, "profileVisits": 58, "follows": 5, "total_followers": 0}, {"date": "2026-04-14", "views": 5601, "reach": 6, "interactions": 414, "linkClicks": 0, "profileVisits": 17, "follows": 1, "total_followers": 0}, {"date": "2026-04-15", "views": 1785, "reach": 6, "interactions": 122, "linkClicks": 0, "profileVisits": 18, "follows": 2, "total_followers": 0}, {"date": "2026-04-16", "views": 1296, "reach": 17, "interactions": 69, "linkClicks": 0, "profileVisits": 33, "follows": 2, "total_followers": 0}, {"date": "2026-04-17", "views": 1772, "reach": 101, "interactions": 89, "linkClicks": 0, "profileVisits": 42, "follows": 6, "total_followers": 0}, {"date": "2026-04-18", "views": 107484, "reach": 42, "interactions": 122, "linkClicks": 0, "profileVisits": 18, "follows": 0, "total_followers": 0}, {"date": "2026-04-19", "views": 2091, "reach": 38, "interactions": 123, "linkClicks": 0, "profileVisits": 18, "follows": 3, "total_followers": 0}, {"date": "2026-04-20", "views": 4573, "reach": 137, "interactions": 323, "linkClicks": 0, "profileVisits": 23, "follows": 6, "total_followers": 0}, {"date": "2026-04-21", "views": 3354, "reach": 154, "interactions": 191, "linkClicks": 0, "profileVisits": 17, "follows": 3, "total_followers": 0}, {"date": "2026-04-22", "views": 2337, "reach": 31, "interactions": 152, "linkClicks": 0, "profileVisits": 47, "follows": 2, "total_followers": 0}, {"date": "2026-04-23", "views": 2333, "reach": 46, "interactions": 147, "linkClicks": 0, "profileVisits": 53, "follows": 2, "total_followers": 0}, {"date": "2026-04-24", "views": 1486, "reach": 48, "interactions": 103, "linkClicks": 0, "profileVisits": 7, "follows": 7, "total_followers": 0}, {"date": "2026-04-25", "views": 1853, "reach": 17, "interactions": 128, "linkClicks": 0, "profileVisits": 27, "follows": 4, "total_followers": 0}, {"date": "2026-04-26", "views": 4033, "reach": 20, "interactions": 259, "linkClicks": 0, "profileVisits": 41, "follows": 6, "total_followers": 0}, {"date": "2026-04-27", "views": 3625, "reach": 12, "interactions": 267, "linkClicks": 0, "profileVisits": 22, "follows": 2, "total_followers": 0}, {"date": "2026-04-28", "views": 2288, "reach": 43, "interactions": 167, "linkClicks": 0, "profileVisits": 19, "follows": 2, "total_followers": 0}, {"date": "2026-04-29", "views": 2348, "reach": 91, "interactions": 104, "linkClicks": 0, "profileVisits": 132, "follows": 6, "total_followers": 0}, {"date": "2026-04-30", "views": 1845, "reach": 25, "interactions": 159, "linkClicks": 0, "profileVisits": 50, "follows": 3, "total_followers": 0}, {"date": "2026-05-01", "views": 2050, "reach": 11, "interactions": 122, "linkClicks": 0, "profileVisits": 21, "follows": 0, "total_followers": 8393}, {"date": "2026-05-02", "views": 1639, "reach": 11, "interactions": 108, "linkClicks": 0, "profileVisits": 21, "follows": 4, "total_followers": 8397}, {"date": "2026-05-03", "views": 1447, "reach": 9, "interactions": 68, "linkClicks": 0, "profileVisits": 26, "follows": 7, "total_followers": 8404}, {"date": "2026-05-04", "views": 920, "reach": 7, "interactions": 69, "linkClicks": 0, "profileVisits": 17, "follows": 8, "total_followers": 8412}, {"date": "2026-05-05", "views": 586, "reach": 3, "interactions": 35, "linkClicks": 0, "profileVisits": 7, "follows": 2, "total_followers": 8414}, {"date": "2026-05-06", "views": 680, "reach": 3, "interactions": 37, "linkClicks": 0, "profileVisits": 5, "follows": 3, "total_followers": 8417}, {"date": "2026-05-07", "views": 623, "reach": 4, "interactions": 38, "linkClicks": 0, "profileVisits": 14, "follows": 6, "total_followers": 8423}, {"date": "2026-05-08", "views": 657, "reach": 10, "interactions": 24, "linkClicks": 0, "profileVisits": 33, "follows": 6, "total_followers": 8429}, {"date": "2026-05-09", "views": 644, "reach": 5, "interactions": 39, "linkClicks": 0, "profileVisits": 21, "follows": 4, "total_followers": 8433}, {"date": "2026-05-10", "views": 1317, "reach": 46, "interactions": 50, "linkClicks": 0, "profileVisits": 20, "follows": 3, "total_followers": 8436}, {"date": "2026-05-11", "views": 2263, "reach": 230, "interactions": 89, "linkClicks": 0, "profileVisits": 35, "follows": 3, "total_followers": 8439}, {"date": "2026-05-12", "views": 2357, "reach": 59, "interactions": 132, "linkClicks": 0, "profileVisits": 44, "follows": 7, "total_followers": 8446}, {"date": "2026-05-13", "views": 5312, "reach": 98, "interactions": 206, "linkClicks": 0, "profileVisits": 322, "follows": 15, "total_followers": 8461}, {"date": "2026-05-14", "views": 3962, "reach": 16, "interactions": 130, "linkClicks": 0, "profileVisits": 51, "follows": 6, "total_followers": 8467}, {"date": "2026-05-15", "views": 5768, "reach": 51, "interactions": 242, "linkClicks": 0, "profileVisits": 40, "follows": 6, "total_followers": 8473}, {"date": "2026-05-16", "views": 3038, "reach": 6, "interactions": 147, "linkClicks": 0, "profileVisits": 35, "follows": 5, "total_followers": 8478}, {"date": "2026-05-17", "views": 5091, "reach": 37, "interactions": 229, "linkClicks": 0, "profileVisits": 30, "follows": 10, "total_followers": 8488}, {"date": "2026-05-18", "views": 3031, "reach": 48, "interactions": 119, "linkClicks": 0, "profileVisits": 24, "follows": 2, "total_followers": 8490}, {"date": "2026-05-19", "views": 2316, "reach": 15, "interactions": 79, "linkClicks": 0, "profileVisits": 20, "follows": 4, "total_followers": 8494}, {"date": "2026-05-20", "views": 2751, "reach": 48, "interactions": 109, "linkClicks": 0, "profileVisits": 11, "follows": 5, "total_followers": 8499}, {"date": "2026-05-21", "views": 3132, "reach": 29, "interactions": 143, "linkClicks": 0, "profileVisits": 173, "follows": 13, "total_followers": 8512}, {"date": "2026-05-22", "views": 2449, "reach": 150, "interactions": 98, "linkClicks": 0, "profileVisits": 140, "follows": 14, "total_followers": 8526}, {"date": "2026-05-23", "views": 1658, "reach": 26, "interactions": 72, "linkClicks": 0, "profileVisits": 9, "follows": 5, "total_followers": 8531}, {"date": "2026-05-24", "views": 2182, "reach": 134, "interactions": 86, "linkClicks": 0, "profileVisits": 25, "follows": 7, "total_followers": 8538}, {"date": "2026-05-25", "views": 3514, "reach": 286, "interactions": 141, "linkClicks": 0, "profileVisits": 51, "follows": 6, "total_followers": 8544}, {"date": "2026-05-26", "views": 2458, "reach": 182, "interactions": 81, "linkClicks": 0, "profileVisits": 37, "follows": 0, "total_followers": 8549}, {"date": "2026-05-27", "views": 2190, "reach": 88, "interactions": 75, "linkClicks": 0, "profileVisits": 36, "follows": 0, "total_followers": 8554}, {"date": "2026-05-28", "views": 1463, "reach": 82, "interactions": 61, "linkClicks": 0, "profileVisits": 34, "follows": 0, "total_followers": 8560}, {"date": "2026-05-29", "views": 1662, "reach": 446, "interactions": 52, "linkClicks": 0, "profileVisits": 104, "follows": 0, "total_followers": 8565}, {"date": "2026-05-30", "views": 1341, "reach": 88, "interactions": 65, "linkClicks": 0, "profileVisits": 13, "follows": 0, "total_followers": 8566}, {"date": "2026-05-31", "views": 1307, "reach": 29, "interactions": 61, "linkClicks": 0, "profileVisits": 24, "follows": 0, "total_followers": 8567}, {"date": "2026-06-01", "views": 878, "reach": 23, "interactions": 34, "linkClicks": 0, "profileVisits": 27, "follows": 0, "total_followers": 8572}, {"date": "2026-06-02", "views": 2019, "reach": 225, "interactions": 100, "linkClicks": 0, "profileVisits": 85, "follows": 0, "total_followers": 8577}, {"date": "2026-06-03", "views": 6438, "reach": 61, "interactions": 293, "linkClicks": 0, "profileVisits": 71, "follows": 0, "total_followers": 8583}, {"date": "2026-06-04", "views": 2993, "reach": 214, "interactions": 169, "linkClicks": 0, "profileVisits": 61, "follows": 0, "total_followers": 8594}, {"date": "2026-06-05", "views": 2833, "reach": 244, "interactions": 126, "linkClicks": 0, "profileVisits": 39, "follows": 0, "total_followers": 8603}, {"date": "2026-06-06", "views": 1931, "reach": 238, "interactions": 116, "linkClicks": 0, "profileVisits": 26, "follows": 0, "total_followers": 8608}, {"date": "2026-06-07", "views": 1823, "reach": 84, "interactions": 123, "linkClicks": 0, "profileVisits": 24, "follows": 0, "total_followers": 8614}, {"date": "2026-06-08", "views": 2392, "reach": 115, "interactions": 121, "linkClicks": 0, "profileVisits": 55, "follows": 0, "total_followers": 8624}, {"date": "2026-06-09", "views": 2928, "reach": 136, "interactions": 155, "linkClicks": 0, "profileVisits": 57, "follows": 0, "total_followers": 8632}, {"date": "2026-06-10", "views": 1781, "reach": 116, "interactions": 64, "linkClicks": 0, "profileVisits": 44, "follows": 0, "total_followers": 8638}, {"date": "2026-06-11", "views": 1687, "reach": 130, "interactions": 55, "linkClicks": 0, "profileVisits": 194, "follows": 0, "total_followers": 8642}, {"date": "2026-06-12", "views": 1274, "reach": 169, "interactions": 56, "linkClicks": 0, "profileVisits": 43, "follows": 0, "total_followers": 8647}, {"date": "2026-06-13", "views": 1245, "reach": 219, "interactions": 55, "linkClicks": 0, "profileVisits": 21, "follows": 0, "total_followers": 8651}, {"date": "2026-06-14", "views": 1659, "reach": 82, "interactions": 85, "linkClicks": 0, "profileVisits": 46, "follows": 0, "total_followers": 8655}, {"date": "2026-06-15", "views": 3762, "reach": 65, "interactions": 171, "linkClicks": 0, "profileVisits": 73, "follows": 0, "total_followers": 8655}, {"date": "2026-06-16", "views": 6200, "reach": 262, "interactions": 156, "linkClicks": 0, "profileVisits": 35, "follows": 0, "total_followers": 8655}, {"date": "2026-06-17", "views": 2301, "reach": 71, "interactions": 79, "linkClicks": 0, "profileVisits": 20, "follows": 0, "total_followers": 8656}, {"date": "2026-06-18", "views": 2096, "reach": 31, "interactions": 94, "linkClicks": 0, "profileVisits": 22, "follows": 0, "total_followers": 8657}, {"date": "2026-06-19", "views": 1600, "reach": 27, "interactions": 70, "linkClicks": 0, "profileVisits": 17, "follows": 0, "total_followers": 8658}, {"date": "2026-06-20", "views": 4332, "reach": 29, "interactions": 243, "linkClicks": 0, "profileVisits": 21, "follows": 0, "total_followers": 8659}, {"date": "2026-06-21", "views": 4794, "reach": 53, "interactions": 191, "linkClicks": 0, "profileVisits": 21, "follows": 0, "total_followers": 8663}, {"date": "2026-06-22", "views": 7566, "reach": 80, "interactions": 261, "linkClicks": 0, "profileVisits": 68, "follows": 0, "total_followers": 8664}, {"date": "2026-06-23", "views": 267, "reach": 0, "interactions": 12, "linkClicks": 0, "profileVisits": 3, "follows": 0, "total_followers": 8687}, {"date": "2026-06-24", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 8687}];
 var xhsData = [{"date": "2026-03-27", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-03-28", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-03-29", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-03-30", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-03-31", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-01", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-02", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-03", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-04", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-05", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-06", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-07", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-08", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-09", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-10", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-11", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-12", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-13", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-14", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-15", "views": 62, "reach": 1128, "interactions": 2, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-16", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-17", "views": 174, "reach": 1695, "interactions": 7, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-18", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-19", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-20", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 438}, {"date": "2026-04-21", "views": 389, "reach": 3630, "interactions": 53, "linkClicks": 0, "profileVisits": 0, "follows": 3, "total_followers": 441}, {"date": "2026-04-22", "views": 164, "reach": 1848, "interactions": 22, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 441}, {"date": "2026-04-23", "views": 3471, "reach": 24919, "interactions": 521, "linkClicks": 0, "profileVisits": 0, "follows": 94, "total_followers": 535}, {"date": "2026-04-24", "views": 828, "reach": 5973, "interactions": 93, "linkClicks": 0, "profileVisits": 0, "follows": 16, "total_followers": 551}, {"date": "2026-04-25", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-04-26", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-04-27", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-04-28", "views": 913, "reach": 5205, "interactions": 62, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-04-29", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-04-30", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-01", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-02", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-03", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-04", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-05", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-06", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-07", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-08", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-09", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 551}, {"date": "2026-05-10", "views": 1413, "reach": 3340, "interactions": 78, "linkClicks": 0, "profileVisits": 0, "follows": 5, "total_followers": 556}, {"date": "2026-05-11", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 556}, {"date": "2026-05-12", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 556}, {"date": "2026-05-13", "views": 501, "reach": 3047, "interactions": 11, "linkClicks": 0, "profileVisits": 0, "follows": 2, "total_followers": 558}, {"date": "2026-05-14", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 558}, {"date": "2026-05-15", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 558}, {"date": "2026-05-16", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 558}, {"date": "2026-05-17", "views": 0, "reach": 0, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 558}, {"date": "2026-05-18", "views": 92, "reach": 798, "interactions": 7, "linkClicks": 0, "profileVisits": 0, "follows": 0, "total_followers": 558}, {"date": "2026-05-19", "views": 132, "reach": 878, "interactions": 8, "linkClicks": 0, "profileVisits": 15, "follows": 0, "total_followers": 558}, {"date": "2026-05-20", "views": 37, "reach": 386, "interactions": 6, "linkClicks": 0, "profileVisits": 13, "follows": 1, "total_followers": 558}, {"date": "2026-05-21", "views": 20, "reach": 244, "interactions": 0, "linkClicks": 0, "profileVisits": 6, "follows": 0, "total_followers": 558}, {"date": "2026-05-22", "views": 35, "reach": 491, "interactions": 7, "linkClicks": 0, "profileVisits": 10, "follows": 0, "total_followers": 558}, {"date": "2026-05-23", "views": 16, "reach": 146, "interactions": 4, "linkClicks": 0, "profileVisits": 2, "follows": 0, "total_followers": 558}, {"date": "2026-05-24", "views": 13, "reach": 103, "interactions": 0, "linkClicks": 0, "profileVisits": 3, "follows": 0, "total_followers": 558}, {"date": "2026-05-25", "views": 17, "reach": 226, "interactions": 0, "linkClicks": 0, "profileVisits": 10, "follows": -1, "total_followers": 557}, {"date": "2026-05-26", "views": 57, "reach": 491, "interactions": 4, "linkClicks": 0, "profileVisits": 12, "follows": -1, "total_followers": 556}, {"date": "2026-05-27", "views": 31, "reach": 301, "interactions": 0, "linkClicks": 0, "profileVisits": 5, "follows": 1, "total_followers": 557}, {"date": "2026-05-28", "views": 105, "reach": 805, "interactions": 5, "linkClicks": 0, "profileVisits": 14, "follows": -2, "total_followers": 555}, {"date": "2026-05-29", "views": 106, "reach": 896, "interactions": 4, "linkClicks": 0, "profileVisits": 15, "follows": -1, "total_followers": 554}, {"date": "2026-05-30", "views": 31, "reach": 264, "interactions": 2, "linkClicks": 0, "profileVisits": 9, "follows": -1, "total_followers": 553}, {"date": "2026-05-31", "views": 8, "reach": 129, "interactions": 1, "linkClicks": 0, "profileVisits": 4, "follows": -1, "total_followers": 552}, {"date": "2026-06-01", "views": 16, "reach": 181, "interactions": 1, "linkClicks": 0, "profileVisits": 3, "follows": -1, "total_followers": 551}, {"date": "2026-06-02", "views": 50, "reach": 617, "interactions": 5, "linkClicks": 0, "profileVisits": 13, "follows": 0, "total_followers": 551}, {"date": "2026-06-03", "views": 26, "reach": 361, "interactions": 1, "linkClicks": 0, "profileVisits": 4, "follows": 0, "total_followers": 551}, {"date": "2026-06-04", "views": 152, "reach": 1028, "interactions": 12, "linkClicks": 0, "profileVisits": 11, "follows": 1, "total_followers": 552}, {"date": "2026-06-05", "views": 102, "reach": 675, "interactions": 2, "linkClicks": 0, "profileVisits": 7, "follows": 0, "total_followers": 552}, {"date": "2026-06-06", "views": 16, "reach": 168, "interactions": 0, "linkClicks": 0, "profileVisits": 4, "follows": 0, "total_followers": 552}, {"date": "2026-06-07", "views": 9, "reach": 68, "interactions": 3, "linkClicks": 0, "profileVisits": 1, "follows": -2, "total_followers": 550}, {"date": "2026-06-08", "views": 8, "reach": 121, "interactions": 1, "linkClicks": 0, "profileVisits": 4, "follows": -1, "total_followers": 549}, {"date": "2026-06-09", "views": 13, "reach": 108, "interactions": 1, "linkClicks": 0, "profileVisits": 2, "follows": 0, "total_followers": 549}, {"date": "2026-06-10", "views": 9, "reach": 103, "interactions": 0, "linkClicks": 0, "profileVisits": 1, "follows": 0, "total_followers": 549}, {"date": "2026-06-11", "views": 24, "reach": 337, "interactions": 4, "linkClicks": 0, "profileVisits": 7, "follows": -3, "total_followers": 546}, {"date": "2026-06-12", "views": 20, "reach": 159, "interactions": 0, "linkClicks": 0, "profileVisits": 4, "follows": 0, "total_followers": 546}, {"date": "2026-06-13", "views": 37, "reach": 427, "interactions": 4, "linkClicks": 0, "profileVisits": 6, "follows": -2, "total_followers": 544}, {"date": "2026-06-14", "views": 8, "reach": 120, "interactions": 1, "linkClicks": 0, "profileVisits": 3, "follows": 0, "total_followers": 544}, {"date": "2026-06-15", "views": 37, "reach": 412, "interactions": 5, "linkClicks": 0, "profileVisits": 4, "follows": 0, "total_followers": 544}, {"date": "2026-06-16", "views": 29, "reach": 263, "interactions": 8, "linkClicks": 0, "profileVisits": 8, "follows": -1, "total_followers": 543}, {"date": "2026-06-17", "views": 10, "reach": 118, "interactions": 0, "linkClicks": 0, "profileVisits": 2, "follows": 1, "total_followers": 544}, {"date": "2026-06-18", "views": 34, "reach": 391, "interactions": 1, "linkClicks": 0, "profileVisits": 7, "follows": -1, "total_followers": 543}, {"date": "2026-06-19", "views": 17, "reach": 123, "interactions": 1, "linkClicks": 0, "profileVisits": 2, "follows": 0, "total_followers": 543}, {"date": "2026-06-20", "views": 5, "reach": 60, "interactions": 0, "linkClicks": 0, "profileVisits": 0, "follows": 1, "total_followers": 544}, {"date": "2026-06-21", "views": 3, "reach": 72, "interactions": 1, "linkClicks": 0, "profileVisits": 2, "follows": -1, "total_followers": 543}, {"date": "2026-06-22", "views": 19, "reach": 403, "interactions": 3, "linkClicks": 0, "profileVisits": 4, "follows": -1, "total_followers": 542}, {"date": "2026-06-23", "views": 13, "reach": 210, "interactions": 0, "linkClicks": 0, "profileVisits": 3, "follows": -1, "total_followers": 541}, {"date": "2026-06-24", "views": 440, "reach": 3289, "interactions": 169, "linkClicks": 0, "profileVisits": 43, "follows": 44, "total_followers": 585}];
 
+var insCharts = {};
+var xhsCharts = {};
+
+function switchPlatform(platform) {
+  var btnIns = document.getElementById('btnIns');
+  var btnXhs = document.getElementById('btnXhs');
+  var secIns = document.getElementById('sectionIns');
+  var secXhs = document.getElementById('sectionXhs');
+
+  if (platform === 'ins') {
+    btnIns.classList.add('active'); btnXhs.classList.remove('active');
+    secIns.classList.remove('hidden'); secXhs.classList.add('hidden');
+    // Resize charts
+    Object.values(insCharts).forEach(function(c) { if(c && c.resize) c.resize(); });
+  } else {
+    btnXhs.classList.add('active'); btnIns.classList.remove('active');
+    secXhs.classList.remove('hidden'); secIns.classList.add('hidden');
+    Object.values(xhsCharts).forEach(function(c) { if(c && c.resize) c.resize(); });
+  }
+}
+
 (function() {
-  var labels90 = insData.map(function(d) { return d.date.slice(5); });
-  var metrics = ['views','reach','interactions','linkClicks','profileVisits','follows'];
   var metricLabels = {
     views: 'Views', reach: 'Reach', interactions: 'Interactions',
     linkClicks: 'Link Clicks', profileVisits: 'Profile Visits', follows: 'New Follows'
   };
-
-  // Compute totals
-  var totals = {};
-  metrics.forEach(function(m) {
-    totals[m] = {ins: 0, xhs: 0};
-    insData.forEach(function(d) { totals[m].ins += d[m]; });
-    xhsData.forEach(function(d) { totals[m].xhs += d[m]; });
-    totals[m].total = totals[m].ins + totals[m].xhs;
-  });
-
-  // Overview Cards
-  var grid = document.getElementById('overviewGrid');
   var order = ['views','reach','interactions','profileVisits','follows'];
-  order.forEach(function(m) {
-    var t = totals[m];
-    var card = document.createElement('div');
-    card.className = 'overview-card';
-    card.innerHTML =
-      '<div class="label">' + metricLabels[m] + ' (Total)</div>' +
-      '<div class="value">' + t.total.toLocaleString() + '</div>' +
-      '<div class="breakdown">' +
-        '<span class="ins-dot">&#9679; Ins: ' + t.ins.toLocaleString() + '</span>' +
-        '<span class="xhs-dot">&#9679; XHS: ' + t.xhs.toLocaleString() + '</span>' +
-      '</div>';
-    grid.appendChild(card);
-  });
 
-  // Platform Cards
-  var pRow = document.getElementById('platformRow');
-  function platformCard(data, label, badgeClass, borderClass) {
-    var insEntries = data.length;
-    var firstDate = data[insEntries-1].date;
-    var lastDate = data[0].date;
-    var fStart = data[insEntries-1].total_followers;
-    var fEnd = data[0].total_followers;
-    var cardHTML = '<div class="platform-card ' + borderClass + '">' +
-      '<h3>' + label + ' <span class="badge ' + badgeClass + '">' + insEntries + ' days</span></h3>' +
-      '<div class="mini-metrics">';
-    ['views','reach','interactions','profileVisits'].forEach(function(m) {
-      var s = 0; data.forEach(function(d) { s += d[m]; });
-      cardHTML += '<div class="mini-metric"><div class="ml">' + metricLabels[m] + '</div><div class="mv">' + s.toLocaleString() + '</div></div>';
-    });
-    cardHTML += '</div>' +
-      '<div class="followers-row">' +
-        'Followers: <strong>' + fStart.toLocaleString() + '</strong> &rarr; <strong>' + fEnd.toLocaleString() + '</strong>' +
-        ' (&Delta;' + (fEnd - fStart >= 0 ? '+' : '') + (fEnd - fStart).toLocaleString() + ')' +
-        ' | ' + firstDate + ' &rarr; ' + lastDate +
-      '</div></div>';
-    return cardHTML;
+  function sum(data, key) {
+    var s = 0; data.forEach(function(d) { s += d[key] || 0; }); return s;
   }
-  pRow.innerHTML = platformCard(insData, 'Instagram', 'ins-bg', 'ins') +
-                   platformCard(xhsData, 'Xiaohongshu', 'xhs-bg', 'xhs');
 
-  // Charts
+  function buildOverview(gridId, data, accent) {
+    var grid = document.getElementById(gridId);
+    grid.innerHTML = '';
+    order.forEach(function(m) {
+      var total = sum(data, m);
+      var card = document.createElement('div');
+      card.className = 'overview-card';
+      card.style.borderLeft = '3px solid ' + accent;
+      card.innerHTML = '<div class="label">' + metricLabels[m] + '</div>' +
+        '<div class="value">' + total.toLocaleString() + '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  function buildSummary(summaryId, data, label, accent) {
+    var el = document.getElementById(summaryId);
+    var n = data.length;
+    var firstDate = data[n-1].date;
+    var lastDate = data[0].date;
+    var fStart = data[n-1].total_followers;
+    var fEnd = data[0].total_followers;
+    var delta = fEnd - fStart;
+    el.innerHTML =
+      '<div class="ps-metric"><div class="ml">Entries</div><div class="mv">' + n + '</div></div>' +
+      '<div class="ps-metric"><div class="ml">Date Range</div><div class="mv" style="font-size:0.78rem;font-weight:600;">' + firstDate + ' → ' + lastDate + '</div></div>' +
+      '<div class="followers-info" style="border-left:3px solid ' + accent + ';padding-left:14px;">' +
+        'Followers: <strong>' + fStart.toLocaleString() + '</strong> → <strong>' + fEnd.toLocaleString() + '</strong>' +
+        ' (Δ' + (delta >= 0 ? '+' : '') + delta.toLocaleString() + ')' +
+      '</div>';
+  }
+
+  function buildTable(tableId, data) {
+    var el = document.getElementById(tableId);
+    var html = '<table><thead><tr>' +
+      '<th>Date</th><th class="num">Views</th><th class="num">Reach</th><th class="num">Interactions</th>' +
+      '<th class="num">Profile Visits</th><th class="num">New Follows</th><th class="num">Total Followers</th>' +
+    '</tr></thead><tbody>';
+    var sorted = data.slice().reverse();
+    var tViews=0,tReach=0,tInt=0,tPV=0,tFol=0;
+    sorted.forEach(function(d) {
+      tViews += d.views; tReach += d.reach; tInt += d.interactions; tPV += d.profileVisits; tFol += d.follows;
+      html += '<tr>' +
+        '<td>' + d.date + '</td>' +
+        '<td class="num">' + (d.views||0).toLocaleString() + '</td>' +
+        '<td class="num">' + (d.reach||0).toLocaleString() + '</td>' +
+        '<td class="num">' + (d.interactions||0).toLocaleString() + '</td>' +
+        '<td class="num">' + (d.profileVisits||0).toLocaleString() + '</td>' +
+        '<td class="num">' + (d.follows||0).toLocaleString() + '</td>' +
+        '<td class="num">' + (d.total_followers||0).toLocaleString() + '</td>' +
+      '</tr>';
+    });
+    html += '<tr class="total-row">' +
+      '<td><strong>Total</strong></td>' +
+      '<td class="num"><strong>' + tViews.toLocaleString() + '</strong></td>' +
+      '<td class="num"><strong>' + tReach.toLocaleString() + '</strong></td>' +
+      '<td class="num"><strong>' + tInt.toLocaleString() + '</strong></td>' +
+      '<td class="num"><strong>' + tPV.toLocaleString() + '</strong></td>' +
+      '<td class="num"><strong>' + tFol.toLocaleString() + '</strong></td>' +
+      '<td class="num"></td>' +
+    '</tr></tbody></table>';
+    el.innerHTML = html;
+  }
+
   var chartDefaults = {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } } },
@@ -238,121 +298,70 @@ var xhsData = [{"date": "2026-03-27", "views": 0, "reach": 0, "interactions": 0,
     interaction: { intersect: false, mode: 'index' }
   };
 
-  function makeChart(canvasId, datasets, yLabel, tall) {
+  function makeChart(canvasId, datasets, yLabel, color) {
     var ctx = document.getElementById(canvasId).getContext('2d');
     var cfg = JSON.parse(JSON.stringify(chartDefaults));
-    if (tall) cfg.scales.y = { ticks: { font: { size: 9 } }, beginAtZero: true };
     cfg.scales.y.title = { display: true, text: yLabel, font: { size: 9 } };
-    return new Chart(ctx, { type: 'line', data: { labels: labels90, datasets: datasets }, options: cfg });
+    datasets.forEach(function(ds) {
+      ds.tension = 0.3; ds.pointRadius = 0; ds.borderWidth = 2;
+      if (!ds.borderColor) ds.borderColor = color;
+      if (ds.fill === undefined) ds.fill = true;
+      if (!ds.backgroundColor) ds.backgroundColor = color.replace(')', ',0.08)').replace('rgb','rgba');
+    });
+    return new Chart(ctx, { type: 'line', data: { labels: labels, datasets: datasets }, options: cfg });
   }
 
-  // Combined Views
-  makeChart('chartViewsCombined', [
-    { label: 'Ins Views', data: insData.map(function(d){return d.views;}), borderColor: '#e1306c', backgroundColor: 'rgba(225,48,108,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2 },
-    { label: 'XHS Views', data: xhsData.map(function(d){return d.views;}), borderColor: '#ff2442', backgroundColor: 'rgba(255,36,66,0.06)', fill:true, tension:0.3, pointRadius:0, borderWidth:2 }
-  ], 'Views', true);
+  // Shared labels (Ins has 91, XHS 90 — use Ins labels for Ins, XHS for XHS)
+  var labelsIns = insData.map(function(d) { return d.date.slice(5); });
+  var labelsXhs = xhsData.map(function(d) { return d.date.slice(5); });
+  var labels = labelsIns; // for makeChart default
 
-  // Ins Reach + Interactions
-  makeChart('chartInsReachInt', [
-    { label: 'Reach', data: insData.map(function(d){return d.reach;}), borderColor: '#f39c12', backgroundColor:'rgba(243,156,18,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2 },
-    { label: 'Interactions', data: insData.map(function(d){return d.interactions;}), borderColor: '#e1306c', backgroundColor:'rgba(225,48,108,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2, yAxisID:'y1' }
-  ], 'Reach', false);
+  // === Instagram ===
+  buildOverview('overviewIns', insData, '#e1306c');
+  buildSummary('summaryIns', insData, 'Instagram', '#e1306c');
+  buildTable('tableIns', insData);
 
-  // XHS Reach + Interactions
-  makeChart('chartXhsReachInt', [
-    { label: 'Reach', data: xhsData.map(function(d){return d.reach;}), borderColor: '#f39c12', backgroundColor:'rgba(243,156,18,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2 },
-    { label: 'Interactions', data: xhsData.map(function(d){return d.interactions;}), borderColor: '#ff2442', backgroundColor:'rgba(255,36,66,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2, yAxisID:'y1' }
-  ], 'Reach', false);
+  insCharts.views = makeChart('chartInsViews', [
+    { label: 'Views', data: insData.map(function(d){return d.views;}), borderColor: '#e1306c' }
+  ], 'Views', '#e1306c');
 
-  // Profile Visits
-  makeChart('chartProfileVisits', [
-    { label: 'Ins Profile Visits', data: insData.map(function(d){return d.profileVisits;}), borderColor: '#e1306c', tension:0.3, pointRadius:0, borderWidth:2 },
-    { label: 'XHS Profile Visits', data: xhsData.map(function(d){return d.profileVisits;}), borderColor: '#ff2442', tension:0.3, pointRadius:0, borderWidth:2 }
-  ], 'Profile Visits', false);
+  insCharts.reachInt = makeChart('chartInsReachInt', [
+    { label: 'Reach', data: insData.map(function(d){return d.reach;}), borderColor: '#f39c12', backgroundColor:'rgba(243,156,18,0.08)' },
+    { label: 'Interactions', data: insData.map(function(d){return d.interactions;}), borderColor: '#e1306c', backgroundColor:'rgba(225,48,108,0.08)', yAxisID:'y1' }
+  ], 'Reach', '#e1306c');
 
-  // Follower Growth (cumulative)
-  var insFollCum = []; var xhsFollCum = [];
-  insData.forEach(function(d){ insFollCum.push(d.total_followers || 0); });
-  xhsData.forEach(function(d){ xhsFollCum.push(d.total_followers || 0); });
-  makeChart('chartFollowers', [
-    { label: 'Ins Total Followers', data: insFollCum, borderColor: '#e1306c', backgroundColor:'rgba(225,48,108,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2 },
-    { label: 'XHS Total Followers', data: xhsFollCum, borderColor: '#ff2442', backgroundColor:'rgba(255,36,66,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2 }
-  ], 'Followers', false);
+  insCharts.pv = makeChart('chartInsProfileVisits', [
+    { label: 'Profile Visits', data: insData.map(function(d){return d.profileVisits;}), borderColor: '#e1306c' }
+  ], 'Profile Visits', '#e1306c');
 
-  // Daily Combined Table
-  var tableDiv = document.getElementById('dailyTable');
-  var combined = [];
-  var dateMap = {};
-  insData.forEach(function(d) {
-    dateMap[d.date] = dateMap[d.date] || {};
-    dateMap[d.date].ins = d;
-  });
-  xhsData.forEach(function(d) {
-    dateMap[d.date] = dateMap[d.date] || {};
-    dateMap[d.date].xhs = d;
-  });
-  Object.keys(dateMap).sort().reverse().forEach(function(dt) {
-    var ins = dateMap[dt].ins || null;
-    var xhs = dateMap[dt].xhs || null;
-    combined.push({ date: dt, ins: ins, xhs: xhs });
-  });
+  insCharts.followers = makeChart('chartInsFollowers', [
+    { label: 'Total Followers', data: insData.map(function(d){return d.total_followers||0;}), borderColor: '#e1306c' }
+  ], 'Followers', '#e1306c');
 
-  var html = '<table><thead><tr>' +
-    '<th>Date</th>' +
-    '<th class="num ins-col">Ins Views</th><th class="num ins-col">Ins Reach</th><th class="num ins-col">Ins Int.</th><th class="num ins-col">Ins P.Visits</th><th class="num ins-col">Ins Follows</th>' +
-    '<th class="num xhs-col">XHS Views</th><th class="num xhs-col">XHS Reach</th><th class="num xhs-col">XHS Int.</th><th class="num xhs-col">XHS P.Visits</th><th class="num xhs-col">XHS Follows</th>' +
-    '<th class="num">Total Views</th><th class="num">Total Int.</th>' +
-  '</tr></thead><tbody>';
+  // === Xiaohongshu ===
+  // Override labels for XHS charts
+  var origMake = makeChart;
+  labels = labelsXhs;
+  buildOverview('overviewXhs', xhsData, '#ff2442');
+  buildSummary('summaryXhs', xhsData, 'Xiaohongshu', '#ff2442');
+  buildTable('tableXhs', xhsData);
 
-  var gTotals = {views:0,reach:0,interactions:0,profileVisits:0,follows:0};
-  combined.forEach(function(row) {
-    var iv = row.ins ? row.ins.views : 0;
-    var ir = row.ins ? row.ins.reach : 0;
-    var ii = row.ins ? row.ins.interactions : 0;
-    var ip = row.ins ? row.ins.profileVisits : 0;
-    var ifo = row.ins ? row.ins.follows : 0;
-    var xv = row.xhs ? row.xhs.views : 0;
-    var xr = row.xhs ? row.xhs.reach : 0;
-    var xi = row.xhs ? row.xhs.interactions : 0;
-    var xp = row.xhs ? row.xhs.profileVisits : 0;
-    var xfo = row.xhs ? row.xhs.follows : 0;
-    var tv = iv + xv;
-    var ti = ii + xi;
-    gTotals.views += tv; gTotals.reach += (ir+xr); gTotals.interactions += ti;
-    gTotals.profileVisits += (ip+xp); gTotals.follows += (ifo+xfo);
-    html += '<tr>' +
-      '<td>' + row.date + '</td>' +
-      '<td class="num ins-col">' + iv.toLocaleString() + '</td>' +
-      '<td class="num ins-col">' + ir.toLocaleString() + '</td>' +
-      '<td class="num ins-col">' + ii.toLocaleString() + '</td>' +
-      '<td class="num ins-col">' + ip.toLocaleString() + '</td>' +
-      '<td class="num ins-col">' + ifo.toLocaleString() + '</td>' +
-      '<td class="num xhs-col">' + xv.toLocaleString() + '</td>' +
-      '<td class="num xhs-col">' + xr.toLocaleString() + '</td>' +
-      '<td class="num xhs-col">' + xi.toLocaleString() + '</td>' +
-      '<td class="num xhs-col">' + xp.toLocaleString() + '</td>' +
-      '<td class="num xhs-col">' + xfo.toLocaleString() + '</td>' +
-      '<td class="num"><strong>' + tv.toLocaleString() + '</strong></td>' +
-      '<td class="num"><strong>' + ti.toLocaleString() + '</strong></td>' +
-    '</tr>';
-  });
-  html += '<tr class="total-row">' +
-    '<td><strong>90-Day Total</strong></td>' +
-    '<td class="num">' + totals.views.ins.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.reach.ins.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.interactions.ins.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.profileVisits.ins.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.follows.ins.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.views.xhs.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.reach.xhs.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.interactions.xhs.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.profileVisits.xhs.toLocaleString() + '</td>' +
-    '<td class="num">' + totals.follows.xhs.toLocaleString() + '</td>' +
-    '<td class="num"><strong>' + totals.views.total.toLocaleString() + '</strong></td>' +
-    '<td class="num"><strong>' + totals.interactions.total.toLocaleString() + '</strong></td>' +
-  '</tr>';
-  html += '</tbody></table>';
-  tableDiv.innerHTML = html;
+  xhsCharts.views = origMake('chartXhsViews', [
+    { label: 'Views', data: xhsData.map(function(d){return d.views;}), borderColor: '#ff2442' }
+  ], 'Views', '#ff2442');
+
+  xhsCharts.reachInt = origMake('chartXhsReachInt', [
+    { label: 'Reach', data: xhsData.map(function(d){return d.reach;}), borderColor: '#f39c12', backgroundColor:'rgba(243,156,18,0.08)' },
+    { label: 'Interactions', data: xhsData.map(function(d){return d.interactions;}), borderColor: '#ff2442', backgroundColor:'rgba(255,36,66,0.08)', yAxisID:'y1' }
+  ], 'Reach', '#ff2442');
+
+  xhsCharts.pv = origMake('chartXhsProfileVisits', [
+    { label: 'Profile Visits', data: xhsData.map(function(d){return d.profileVisits;}), borderColor: '#ff2442' }
+  ], 'Profile Visits', '#ff2442');
+
+  xhsCharts.followers = origMake('chartXhsFollowers', [
+    { label: 'Total Followers', data: xhsData.map(function(d){return d.total_followers||0;}), borderColor: '#ff2442' }
+  ], 'Followers', '#ff2442');
 })();
 </script>
 </body>
