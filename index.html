@@ -878,7 +878,7 @@ var chartMain = null, chartAux = null, chartAux2 = null;
 
 function filterByPeriod() {
   if (data.length === 0) return [];
-  var latest = data[0].date;
+  var latest = data[data.length-1].date;
   var cutoff = new Date(latest);
   cutoff.setDate(cutoff.getDate() - period + 1);
   var cutoffStr = cutoff.getFullYear() + '-' + String(cutoff.getMonth()+1).padStart(2,'0') + '-' + String(cutoff.getDate()).padStart(2,'0');
@@ -918,8 +918,8 @@ function renderCards(filtered) {
     container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">&#128200;</div><p>No data yet. Start by adding your first daily snapshot.</p></div>';
     return;
   }
-  var latest = filtered[0];
-  var prev = filtered.length >= 2 ? filtered[1] : null;
+  var latest = filtered[filtered.length-1];
+  var prev = filtered.length >= 2 ? filtered[filtered.length-2] : null;
   function chg(cur, prevVal) {
     if (prevVal === null || prevVal === undefined) return '<span class="change flat">&mdash;</span>';
     if (prevVal === 0) return cur > 0 ? '<span class="change up">New</span>' : '<span class="change flat">&mdash;</span>';
