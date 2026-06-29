@@ -1,159 +1,80 @@
-﻿<!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>社交媒体数据仪表盘</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
 <style>
-
 :root {
-
   --bg-primary: #f5f6fa;
-
   --bg-secondary: #ffffff;
-
   --bg-card: #ffffff;
-
   --bg-input: #f9fafb;
-
   --border: #e5e7eb;
-
   --text-primary: #1a1a2e;
-
   --text-secondary: #4a4a6a;
-
   --text-muted: #8e8ea0;
-
   --accent: #7c3aed;
-
   --accent2: #00cec9;
-
   --success: #00b894;
-
   --danger: #ff7675;
-
   --warning: #fdcb6e;
-
   --radius: 14px;
-
   --radius-sm: 10px;
-
   --shadow: 0 2px 12px rgba(0,0,0,0.06);
-
 }
-
 *{margin:0;padding:0;box-sizing:border-box;}
-
 body{
-
   font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
-
   background: var(--bg-primary); color: var(--text-primary); min-height:100vh;
-
 }
-
 .header{
-
   background: #ffffff; border-bottom:1px solid #e5e7eb;
-
   padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
-
   flex-wrap:wrap; gap:10px;
-
 }
-
 .header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;}
-
 .header .sub{font-size:0.72rem;color:var(--text-muted);display:block;}
-
 .main{padding:20px 28px 28px;max-width:1400px;margin:0 auto;}
-
 .btn{padding:8px 16px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;
-
   border:1px solid var(--border);transition:all .2s;font-family:inherit;}
-
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-
 .btn-primary:hover{background:#6d28d9;}
-
 .btn-secondary{background:var(--bg-input);color:var(--text-primary);}
-
 .btn-secondary:hover{background:#e5e7eb;}
-
 .btn-danger{background:transparent;color:var(--danger);border-color:var(--danger);}
-
 .btn-danger:hover{background:rgba(255,118,117,0.12);}
-
 .btn-sm{padding:5px 10px;font-size:0.7rem;}
-
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
-
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-
 .card-header h3{font-size:0.9rem;font-weight:700;}
-
 .delay-banner{
-
   display:flex; align-items:center; justify-content:space-between;
-
   background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(155,89,182,0.04));
-
   border:1px solid rgba(124,58,237,0.18); border-radius:var(--radius-sm);
-
   padding:10px 18px; margin-bottom:18px; font-size:0.78rem; color:#7c3aed;
-
 }
-
 .delay-banner .banner-close{
-
   background:none; border:none; color:#8e8ea0; cursor:pointer; font-size:1.1rem;
-
   padding:0 4px; line-height:1; transition:color .2s;
-
 }
-
 .delay-banner .banner-close:hover{color:#1a1a2e;}
-
 .delay-text{color:var(--text-muted);}
-
 .card-header .sub{font-size:0.7rem;color:var(--text-muted);}
-
 .metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:18px;}
-
 .total-followers-card{
-
   background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(155,89,182,0.05));
-
   border:1.5px solid rgba(124,58,237,0.2); border-radius:var(--radius-sm);
-
   padding:13px 15px; position:relative;
-
 }
-
 .total-followers-card .tf-label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
-
 .total-followers-card .tf-value{font-size:1.5rem;font-weight:800;color:var(--text-primary);margin:4px 0;letter-spacing:-0.02em;}
-
 .total-followers-card .tf-sub{font-size:0.68rem;color:var(--text-muted);}
-
 .total-followers-card .change{font-size:0.7rem;margin-top:2px;}
-
 .total-followers-card .change.up{color:var(--success);}
-
 .total-followers-card .change.down{color:var(--danger);}
-
 .total-followers-card .change.flat{color:var(--text-muted);}
-
-
-
 
 
 .tf-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;}
@@ -164,456 +85,192 @@ body{
 
 
 
-
-
-
-
-
-
-
-
 .metric-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;}
-
 .metric-card .label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
-
 .metric-card .value{font-size:1.5rem;font-weight:800;margin:3px 0;}
-
 .metric-card .change{font-size:0.7rem;margin-top:2px;}
-
 .metric-card .change.up{color:var(--success);}
-
 .metric-card .change.down{color:var(--danger);}
-
 .metric-card .change.flat{color:var(--text-muted);}
-
 .period-pills{display:flex;gap:6px;margin-bottom:16px;align-items:center;}
-
 .period-pills .label{font-size:0.7rem;color:var(--text-muted);margin-right:6px;}
-
 .period-pill{padding:6px 18px;border-radius:99px;font-size:0.74rem;font-weight:600;cursor:pointer;
-
   border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:all .2s;font-family:inherit;}
-
 .period-pill:hover{border-color:var(--accent);color:var(--text-primary);}
-
 .period-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-
 .platform-tabs{display:flex;gap:6px;align-items:center;margin-left:16px;}
-
 .platform-tab{padding:6px 16px;border-radius:99px;font-size:0.74rem;font-weight:600;cursor:pointer;
-
   border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:all .2s;font-family:inherit;}
-
 .platform-tab:hover{border-color:var(--accent);color:var(--text-primary);}
-
 .platform-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-
 .period-note{font-size:0.68rem;color:var(--text-muted);margin-left:auto;}
-
 .summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:18px;}
-
 .summary-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 15px;}
-
 .summary-card .label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;}
-
 .summary-card .main-val{font-size:1.25rem;font-weight:800;margin:2px 0;}
-
 .summary-card .sub-val{font-size:0.7rem;color:var(--text-muted);}
-
 .summary-card.followers{border-left:3px solid var(--accent);border-color:#9b59b6;box-shadow:inset 0 0 30px rgba(124,58,237,0.03);}
 
-
-
 .chart-empty-guide{display:flex;align-items:center;justify-content:center;height:260px;
-
   background:var(--bg-card);border:1.5px dashed var(--border);border-radius:var(--radius);margin-bottom:18px;
-
   color:var(--text-muted);font-size:0.78rem;text-align:center;padding:20px;}
-
 .chart-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
-
 .chart-box h4{font-size:0.8rem;color:#4a4a6a;margin-bottom:10px;}
-
 .chart-wrap{position:relative;height:300px;}
-
 .chart-wrap.small{height:240px;}
-
 .chart-wrap canvas{width:100%!important;}
-
 .form-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
-
 @media(max-width:900px){.form-grid{grid-template-columns:repeat(4,1fr);}}
-
 @media(max-width:600px){.form-grid{grid-template-columns:1fr 1fr;}}
-
 .form-group{display:flex;flex-direction:column;gap:3px;}
-
 .form-group label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
-
 .form-group input{
-
   background:var(--bg-input);border:1px solid var(--border);border-radius:7px;padding:8px 10px;
-
   color:var(--text-primary);font-size:0.81rem;font-family:'SF Mono','Cascadia Code',Consolas,monospace;
-
 }
-
 .form-group input:focus{outline:none;border-color:var(--accent);}
-
 .btn-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
-
 .table-wrap{overflow-x:auto;max-height:420px;overflow-y:auto;}
-
 .data-table{width:100%;border-collapse:collapse;font-size:0.76rem;}
-
 .data-table th{background:#f3eeff;padding:9px 10px;text-align:left;font-weight:700;color:#5b21b6;border-bottom:2px solid #d8c9ff;position:sticky;top:0;z-index:1;white-space:nowrap;}
-
 .data-table td{padding:7px 10px;border-bottom:1px solid #f0f0f5;white-space:nowrap;}
-
 .data-table tr:hover td{background:rgba(124,58,237,0.04);}
-
 .data-table .num{text-align:right;font-variant-numeric:tabular-nums;}
-
 .empty-state{text-align:center;padding:48px 16px;color:var(--text-muted);}
-
 .empty-state .empty-icon{font-size:2.5rem;opacity:.3;margin-bottom:10px;}
-
 .empty-state p{font-size:0.82rem;}
-
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
-
 .modal-overlay.show{display:flex;}
-
 .modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;width:92%;max-width:620px;box-shadow:var(--shadow);}
-
 .modal h3{margin-bottom:12px;}
-
 .modal textarea{width:100%;min-height:180px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text-primary);font-family:'SF Mono','Cascadia Code',Consolas,monospace;font-size:0.78rem;resize:vertical;}
-
 .modal .hint{font-size:0.7rem;color:var(--text-muted);margin:6px 0 12px;}
-
 .modal .hint code{background:#f3f4f6;padding:2px 5px;border-radius:4px;}
-
 .hint{margin-top:6px;font-size:0.7rem;color:var(--text-muted);}
-
 .hint code{background:#f3f4f6;padding:2px 5px;border-radius:4px;}
-
 ::-webkit-scrollbar{width:5px;height:5px;}
-
 ::-webkit-scrollbar-track{background:transparent;}
-
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
-
 .posts-section{margin-bottom:18px;}
-
 .posts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
-
 .posts-header h3{font-size:0.9rem;font-weight:700;}
-
 .posts-header select{background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text-primary);font-size:0.74rem;cursor:pointer;font-family:inherit;}
-
 .posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;}
-
 @media(max-width:760px){.posts-grid{grid-template-columns:1fr;}}
-
 .post-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
-
 .post-card .pc-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-
 .post-card .pc-header .username{font-weight:700;font-size:0.82rem;}
-
 .post-card .pc-header .type-badge{font-size:0.63rem;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--text-muted);white-space:nowrap;text-transform:uppercase;letter-spacing:0.02em;}
-
 .post-card .pc-metrics{display:flex;flex-wrap:wrap;gap:6px 14px;}
-
 .post-card .pc-metric{display:flex;flex-direction:column;min-width:50px;}
-
 .post-card .pc-metric .label{font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;}
-
 .post-card .pc-metric .value{font-size:1.1rem;font-weight:800;color:var(--text-primary);}
-
 .post-card .pc-metric.total{min-width:60px;}
-
 .post-card .pc-metric.total .value{color:var(--accent);}
-
 .post-card .pc-footer{display:flex;flex-direction:column;gap:4px;}
-
 .post-card .pc-desc{font-size:0.71rem;color:var(--text-secondary);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-
 .post-card .pc-link{font-size:0.68rem;}
-
 .post-card .pc-link a{color:var(--accent);text-decoration:none;}
-
 .post-card .pc-link a:hover{text-decoration:underline;}
-
 .posts-empty{text-align:center;padding:32px 16px;color:var(--text-muted);font-size:0.78rem;}
-
 .ai-section{margin-top:18px;}
-
 .ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
 @media(max-width:760px){.ai-grid{grid-template-columns:1fr;}}
-
 .ai-insights{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;}
-
 .ai-insight-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;}
-
 .ai-insight-card .ai-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
-
 .ai-insight-card .ai-value{font-size:1.05rem;font-weight:800;color:var(--text-primary);}
-
 .ai-insight-card .ai-sub{font-size:0.66rem;color:var(--text-muted);margin-top:2px;}
-
 .ai-insight-card .ai-trend.up{color:var(--success);}
-
 .ai-insight-card .ai-trend.down{color:var(--danger);}
-
 .ai-suggestions{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;}
-
 .ai-suggestions .ai-title{font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.03em;}
-
 .ai-suggestion-item{display:flex;gap:8px;margin-bottom:8px;font-size:0.72rem;color:var(--text-secondary);line-height:1.5;align-items:flex-start;}
-
 .ai-suggestion-item:last-child{margin-bottom:0;}
-
 .ai-bullet{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:#9b59b6;margin-top:5px;}
-
 .ai-empty{text-align:center;padding:24px;color:var(--text-muted);font-size:0.74rem;grid-column:1/-1;}
-
 .ai-na{color:var(--text-muted);font-style:italic;}
-
 </style>
-
 </head>
-
 <body>
 
-
-
 <div class="header">
-
   <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
-
-    <div><h1 id="pageTitle">ins数据总览</h1><span class="sub" id="pageSub">姣忔棩蹇収 路 瓒嬪娍杩借釜 路 鏁版嵁椹卞姩</span></div>
-
+    <div><h1 id="pageTitle">ins数据总览</h1><span class="sub" id="pageSub">每日快照 · 趋势追踪 · 数据驱动</span></div>
     <div class="platform-tabs" id="platformTabs">
-
       <button class="platform-tab active" data-platform="ins" onclick="switchPlatform('ins')">Ins</button>
-
       <button class="platform-tab" data-platform="xhs" onclick="switchPlatform('xhs')">小红书</button>
-
     </div>
-
-  </div>
-
-  <div>
-
-    <button class="btn btn-secondary btn-sm" onclick="exportData()">导出 JSON</button>
-
-    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">导入 JSON</button>
-
-    <button class="btn btn-danger btn-sm" onclick="clearAllData()">娓呯┖鍏ㄩ儴</button>
-
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)">
-
   </div>
 
 </div>
-
-
 
 <div class="main">
 
+  <!-- Delay Banner -->
+  <div class="delay-banner" id="delayBanner" style="display:none;">
+    <span>&#9432;&#65039; 注：新增粉丝数据存在约2-3天延迟，近几日显示「<span class="delay-text">延迟中</span>」为正常现象，数据回填后将自动更新。</span>
+    <button class="banner-close" onclick="document.getElementById('delayBanner').style.display='none'">&times;</button>
+  </div>
+
   
-
   <!-- Overview Cards -->
-
   <div class="metrics-row" id="overviewCards"></div>
 
-
-
   <!-- Period Toggle + Summary -->
-
   <div class="period-pills">
-
     <span class="label">Period:</span>
-
     <button class="period-pill" data-days="7" onclick="setPeriod(7)">7 Days</button>
-
     <button class="period-pill active" data-days="30" onclick="setPeriod(30)">30 Days</button>
-
     <button class="period-pill" data-days="90" onclick="setPeriod(90)">90 Days</button>
-
     <span class="period-note" id="periodNote"></span>
-
   </div>
-
   <div class="summary-row" id="summaryCards"></div>
 
-
-
   <!-- Main Trend Chart -->
-
   <div class="chart-box" id="chartBox1">
-
     <h4 id="chartMainTitle">观看量 / 触达 / 互动趋势 + 新增粉丝</h4>
-
     <div class="chart-wrap" id="chartWrap1"><canvas id="chartMain"></canvas></div>
-
     <div class="chart-empty-guide" id="chartGuide1" style="display:none;"></div>
-
   </div>
-
-
 
   <!-- Profile Visits Trend Chart -->
-
   <div class="chart-box" id="chartBox2">
-
     <h4 id="chartAuxTitle">主页访问趋势</h4>
-
     <div class="chart-wrap" id="chartWrap2" style="height:240px;"><canvas id="chartAux2"></canvas></div>
-
     <div class="chart-empty-guide" id="chartGuide2" style="display:none;"></div>
-
   </div>
-
-
-
-  <!-- Data Entry -->
-
-  <div class="card" style="margin-bottom:18px;">
-
-    <div class="card-header"><h3 id="entryTitle">娣诲姞姣忔棩蹇収</h3></div>
-
-    <div class="form-grid">
-
-      <div class="form-group"><label>日期</label><input type="date" id="dsDate"></div>
-
-      <div class="form-group"><label id="lblViews">观看量?/label><input type="number" id="dsViews" placeholder="0"></div>
-
-      <div class="form-group"><label id="lblReach">触达</label><input type="number" id="dsReach" placeholder="0"></div>
-
-      <div class="form-group"><label id="lblInteractions">内容互动</label><input type="number" id="dsInteractions" placeholder="0"></div>
-
-      <div class="form-group"><label>链接点击</label><input type="number" id="dsLinkClicks" placeholder="0"></div>
-
-      <div class="form-group"><label id="lblProfileVisits">主页访问</label><input type="number" id="dsProfileVisits" placeholder="0"></div>
-
-      <div class="form-group"><label>新增粉丝</label><input type="number" id="dsFollows" placeholder="0"></div>
-
-      <div class="form-group"><label>粉丝总数</label><input type="number" id="dsTotalFollowers" placeholder="鐣欑┖"></div>
-
-    </div>
-
-    <div class="btn-row">
-
-      <button class="btn btn-primary" onclick="addDailySnapshot()">娣诲姞蹇収</button>
-
-      <button class="btn btn-secondary" onclick="document.getElementById('csvModal').classList.add('show')">批量导入 CSV</button>
-
-      <button class="btn btn-danger btn-sm" onclick="deleteLast()">删除最后一条</button>
-
-    </div>
-
-    <div class="hint">CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code></div>
-
-  </div>
-
-
 
   <!-- Data Table -->
-
   <div class="card">
-
     <div class="card-header"><h3 id="tableTitle">每日记录</h3><span class="sub" id="recordCount"></span></div>
-
     <div class="table-wrap" id="dsDataTable"></div>
-
   </div>
-
-
 
   <!-- Top Posts -->
-
   <div class="posts-section" style="margin-top:18px;">
-
     <div class="posts-header">
-
-      <h3 id="postsTitle">鐑棬甯栧瓙</h3>
-
+      <h3 id="postsTitle">热门帖子</h3>
       <select onchange="setPostSort(this.value)">
-
         <option value="interactions">排序方式: 互动量</option>
-
         <option value="views">排序方式: 观看量</option>
-
         <option value="reach">排序方式: 触达</option>
-
       </select>
-
     </div>
-
     <div class="posts-grid" id="postsGrid"></div>
-
   </div>
-
-
 
   <!-- AI Analysis -->
-
   <div class="ai-section" id="aiSection">
-
     <div class="card-header"><h3>AI 数据分析与建议</h3><span class="sub" id="aiPeriodLabel"></span></div>
-
     <div class="ai-grid" id="aiGrid"></div>
-
-  </div>
-
-
-
-</div>
-
-
-
-<!-- CSV Import Modal -->
-
-<div class="modal-overlay" id="csvModal">
-
-  <div class="modal">
-
-    <h3>鎵归噺瀵煎叆姣忔棩蹇収 CSV</h3>
-
-    <div class="hint">CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code><br>姣忓ぉ涓€琛屻€傛棩鏈熸牸寮? YYYY-MM-DD銆傞噸澶嶆棩鏈熷皢琚鐩栥€?/div>
-
-    <textarea id="csvText" placeholder="2026-06-17,6187,262,156,0,35,0,8655&#10;2026-06-16,5800,240,142,2,30,1,8650"></textarea>
-
-    <div class="btn-row" style="margin-top:12px;">
-
-      <button class="btn btn-primary" onclick="importCSV()">导入</button>
-
-      <button class="btn btn-secondary" onclick="closeCSVModal()">取消</button>
-
-    </div>
-
   </div>
 
 </div>
 
-
-
-<script>function init() {
-
-
-
-var STORAGE_KEY = 'fb_insights_daily_v1';
-
-var POSTS_KEY = 'fb_posts_data';
-
-var XHS_STORAGE_KEY = 'xhs_daily_data';
-
-var XHS_POSTS_KEY = 'xhs_posts_data';
-
+<script>
+var data = [];
+var posts = [];
 var data = [
 
       { date: "2026-03-27", views: 549, reach: 31, interactions: 0, linkClicks: 0, profileVisits: 58, follows: 4, total_followers: 8321 },
@@ -804,61 +461,10 @@ var data = [
 
       { date: "2026-06-28", views: null, reach: null, interactions: null, linkClicks: 0, profileVisits: null, follows: 0, total_followers: 8694 }
 
-    ];
-
-  // --- Merge localStorage with preload data (preload wins for same date) ---
-
-  var savedData = localStorage.getItem(STORAGE_KEY);
-
-  if (savedData) {
-
-    try {
-
-      var parsed = JSON.parse(savedData);
-
-      var preloadDates = {};
-
-      for (var pi = 0; pi < data.length; pi++) {
-
-        preloadDates[data[pi].date] = true;
-
-      }
-
-      var merged = [];
-
-      for (var li = 0; li < parsed.length; li++) {
-
-        if (!preloadDates[parsed[li].date]) {
-
-          merged.push(parsed[li]);
-
-        }
-
-      }
-
-      // Append localStorage-only entries, then sort
-
-      data = data.concat(merged);
-
-      data.sort(function(a, b) { return b.date.localeCompare(a.date); });
-
-    } catch (e) { console.warn('merge localStorage failed:', e); }
-
-  }
-
-  renderAll();
-
-  var today = new Date();
-
-  document.getElementById('dsDate').value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-
-  // Initialize Ins data as primary
-
-  insData = data.slice();
-
-  // Preload XHS 30-day real data (from xiaohongshu_30days_all_metrics.xlsx)
-
-  xhsData = [
+    ];;
+var insData = data.slice();
+var insPosts = [];
+xhsData = [
 
       { date: "2026-03-27", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
 
@@ -1049,62 +655,572 @@ var data = [
       { date: "2026-06-28", views: 24, reach: 315, interactions: 4, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 649 }
 
     ];
+var xhsPosts = [];
+var platform = 'ins';
+var period = 30;
+var postSort = 'interactions';
 
-  // --- Merge XHS localStorage with preload data (preload wins for same date) ---
-
-  var savedXhs = localStorage.getItem(XHS_STORAGE_KEY);
-
-  if (savedXhs) {
-
-    try {
-
-      var parsedXhs = JSON.parse(savedXhs);
-
-      var preloadXhsDates = {};
-
-      for (var px = 0; px < xhsData.length; px++) {
-
-        preloadXhsDates[xhsData[px].date] = true;
-
-      }
-
-      var mergedXhs = [];
-
-      for (var lx = 0; lx < parsedXhs.length; lx++) {
-
-        if (!preloadXhsDates[parsedXhs[lx].date]) {
-
-          mergedXhs.push(parsedXhs[lx]);
-
-        }
-
-      }
-
-      xhsData = xhsData.concat(mergedXhs);
-
-      xhsData.sort(function(a, b) { return b.date.localeCompare(a.date); });
-
-    } catch (e) { console.warn('merge XHS localStorage failed:', e); }
-
+var PLATFORM_LABELS = {
+  ins: {
+    title: 'ins数据总览', sub: '每日快照 · 趋势追踪 · 数据驱动',
+    csvModalTitle: 'Ins',
+    chartMain: '观看量 / 触达 / 互动趋势 + 新增粉丝',
+    chartAux: '主页访问趋势',
+    lblViews: '观看量', lblReach: '触达', lblInteractions: '内容互动', lblProfileVisits: '主页访问',
+    lblFollows: '新增粉丝', lblTotalFollowers: '粉丝总数',
+    postsTitle: '热门帖子',
+    entryTitle: '添加每日快照',
+    tableTitle: '每日记录',
+    cardViews: 'Views', cardReach: 'Reach', cardInteractions: 'Interactions', cardLinkClicks: 'Link Clicks', cardProfileVisits: 'Profile Visits', cardFollows: 'Follows',
+    sumViews: 'Total Views', sumReach: 'Total Reach', sumInteractions: 'Total Interactions', sumPV: 'Total Profile Visits',
+    csvHint: 'CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code>',
+    csvModalHint: 'CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code><br>每天一行。日期格式: YYYY-MM-DD。重复日期将被覆盖。',
+    chartYTitle: 'Views / Reach / Interactions',
+    chartY1Title: 'Follows',
+    chartLegend: ['Views','Reach','Interactions','Follows'],
+    chartAuxLegend: ['Profile Visits'],
+    tableCols: ['Date','Views','Reach','Interactions','Link Clicks','Profile Visits','Follows','粉丝总数'],
+    pageLinkText: 'View on Instagram →',
+    insFields: ['Views','Likes','Comments','Shares','Saves'],
+    analyticsViews: 'Views 趋势', analyticsReach: 'Reach 趋势',
+    analyticsVPeak: 'Views 峰值', analyticsIPeak: '交互峰值'
+  },
+  xhs: {
+    title: '小红书数据总览', sub: '每日快照 · 趋势追踪 · 数据驱动',
+    csvModalTitle: '小红书',
+    chartMain: '笔记阅读量 / 曝光量 / 互动趋势 + 新增粉丝',
+    chartAux: '主页访客趋势',
+    lblViews: '笔记阅读量', lblReach: '笔记曝光量', lblInteractions: '互动量', lblProfileVisits: '主页访客',
+    lblFollows: '新增粉丝', lblTotalFollowers: '粉丝总数',
+    postsTitle: '热门笔记',
+    entryTitle: '添加每日快照',
+    tableTitle: '每日记录',
+    cardViews: '阅读量', cardReach: '曝光量', cardInteractions: '互动量', cardLinkClicks: '链接点击', cardProfileVisits: '主页访客', cardFollows: '新增粉丝',
+    sumViews: '总阅读量', sumReach: '总曝光量', sumInteractions: '总互动量', sumPV: '总主页访客',
+    csvHint: 'CSV 格式: <code>日期,笔记阅读量,曝光量,互动量,链接点击,主页访客,新增粉丝,粉丝总数</code>',
+    csvModalHint: 'CSV 格式: <code>日期,笔记阅读量,曝光量,互动量,链接点击,主页访客,新增粉丝,粉丝总数</code><br>每天一行。日期格式: YYYY-MM-DD。重复日期将被覆盖。',
+    chartYTitle: '阅读量 / 曝光量 / 互动量',
+    chartY1Title: '新增粉丝',
+    chartLegend: ['阅读量','曝光量','互动量','新增粉丝'],
+    chartAuxLegend: ['主页访客'],
+    tableCols: ['日期','笔记阅读量','曝光量','互动量','链接点击','主页访客','新增粉丝','粉丝总数'],
+    pageLinkText: '查看笔记 →',
+    insFields: ['阅读量','点赞','评论','分享','收藏'],
+    analyticsViews: '阅读量趋势', analyticsReach: '曝光量趋势',
+    analyticsVPeak: '阅读量峰值', analyticsIPeak: '互动峰值'
   }
+};
 
-
-
-  saveXhs();
-
-  loadPosts();
-
-  insPosts = posts.slice();
-
-  renderPosts();
-
+function switchPlatform(p) {
+  if (p === platform) return;
+  // Save current platform data to memory
+  if (platform === 'ins') { insData = data.slice(); insPosts = posts.slice(); }
+  else { xhsData = data.slice(); xhsPosts = posts.slice(); }
+  // Switch
+  platform = p;
+  if (p === 'ins') {
+    data = insData.slice();
+    posts = insPosts.slice();
+  } else {
+    data = xhsData.slice();
+    posts = xhsPosts.slice();
+  }
+  // Update tab UI
+  document.querySelectorAll('.platform-tab').forEach(function(t) { t.classList.toggle('active', t.dataset.platform === p); });
+  // Update all labels
+  updateLabels();
+  renderAll();
+  if (platform === 'xhs') { renderXhsPosts(); } else { renderPosts(); }
 }
 
+function updateLabels() {
+  var L = PLATFORM_LABELS[platform];
+  document.getElementById('pageTitle').textContent = L.title;
+  document.getElementById('pageSub').textContent = L.sub;
+  document.getElementById('chartMainTitle').textContent = L.chartMain;
+  document.getElementById('chartAuxTitle').textContent = L.chartAux;
+  document.getElementById('postsTitle').textContent = L.postsTitle;
+  document.getElementById('tableTitle').textContent = L.tableTitle;
+  document.title = L.title;
+}
+
+var EMBED_POSTS_CSV = 'Post ID,Account ID,Account username,Account name,Description,Duration (sec),Publish time,Permalink,Post type,Data comment,Date,Views,Likes,Shares,Comments,Saves,Reach,Follows\n' +
+'18461501035128228,17841406724420934,roswheel,Roswheel,"The real journey doesn\'t start at the starting line in Tuscany. It starts here, in the quiet, damp forests of Germany. \\U0001f332\\n\\nIt\'s the endless cycle of packing and re-packing on a Tuesday afternoon. It\'s figuring out exactly what matters when it\'s just you, your bike, and the sound of tires on gravel. Every strap tightened and every zipper closed is a rehearsal for the hundreds of kilometers ahead.\\n\\nAwesome perspective and shots by @sophiexxplores \\n\\n#ROSWHEEL #BikePacking #RoadCycling #BikeAdventure #RideMore\\n\\n#CyclingLife #BicycleTouring",0,"06/02/2026 01:06",https://www.instagram.com/p/DZE4CPymdAH/,IG carousel,,Lifetime,888,15,1,0,0,383,0\n' +
+'18062782151706932,17841406724420934,roswheel,Roswheel,"4,727 meters above sea level at Abra Chaucha. @pedalando_liberi  and his fully loaded rig pushing through the thin air of the Andes. \\n\\n #cyclinglife #Roswheel #ExploreMore #OffTheGrid #cyclingphotography",0,"06/16/2026 00:31",https://www.instagram.com/p/DZo3JIXk_8k/,IG carousel,,Lifetime,621,25,0,6,1,254,1\n' +
+'17948748984196093,17841402829719123,la_plakki,"Erika Placchi","Perché, in realtà, io amo come sono...\\nCostantemente imbranata e fin troppo sensibile...\\nCerco sempre di capire cosa si cela dietro le persone...\\nAmo far ridere gli altri, sono chiacchierona e una vera rompiscatole con chi mi conosce bene...\\nMa sono anche paranoica e piena d\'ansia per ogni minima cosa...\\nUn\'eterna romantica, sempre attenta a cogliere l\'amore in ciò che mi circonda!\\nAmo stare con la testa tra le nuvole ma anche analizzare ogni atteggiamento di una persona...\\nAmo porre la mano a chi ne ha bisogno ascoltare chi vuole liberarsi dei propri demoni...\\nAmo prendermi cura degli altri...\\nPreferisco amare anziché essere amata...\\nMa più di tutto, amo essere me stessa fino alla fine!!!\\n\\nCome hai detto tu … \\nSenza di te non riesco a far niente…\\n\\n#mihaisfioratoilcuore",0,"06/15/2026 21:00",https://www.instagram.com/p/DZofED-jeNA/,IG carousel,,Lifetime,5813,165,2,2,0,,\n' +
+'18103464920469590,17841472369964471,fre.e.2,"Frederiek Harings","I had the chance to try out this bike bag from @roswheel . I was already impressed when I unboxed it—it has a sleek design and is super easy to mount on the bike. It\'s perfect for long rides when I like to bring along a few extra items. The bag comes in different sizes, I have the xs\\n\\n#gravel #bikebag #bikepacking #cyclinglife #gifted",9,"06/14/2026 10:30",https://www.instagram.com/reel/DZkyI7RMXsL/,IG reel,,Lifetime,2287,65,3,0,0,,\n' +
+'18106406230786670,17841427633109452,zuzkabe3,"Zuzka Be","#gravelcycling\\n#gravelbike\\n#cyclinglife\\n#womenscycling\\n#outsideisfree\\n#rideandexplore\\n#cyclingphotos\\n#fromwhereiride\\n#graveladventure\\n#roadlessridden\\n#cyclingshots @fernwee.cc",0,"06/14/2026 09:36",https://www.instagram.com/p/DZksAFJCN-F/,IG carousel,,Lifetime,2625,308,0,24,0,,\n' +
+'18106490803999311,17841406724420934,roswheel,Roswheel,"\\U0001f4cd Monferrato, Piemonte, Italy\\n\\n\\U0001f465 @la_plakki\\n\\n\\U0001f3ac Rolling hills, hay bales, and a quiet moment off the saddle.\\n\\nJust a beautiful day on the gravel. \\U0001f3fe\\U0001f6f2\\n\\n #cyclinglife #BicycleBag #Roswheel #CyclingCommunity #ExploreMore",0,"06/12/2026 21:00",https://www.instagram.com/p/DZgwp5IjRAg/,IG carousel,,Lifetime,684,19,4,0,1,366,0\n' +
+'18036671357804266,17841408454170571,gbscotland,"Stuart Dick","The camera angle nobody asked for.\\n\\nHad a zone 2 ride to do in preparation for @chasethesuncycle and took the opportunity to test a few new bits of kit, and enjoy being out in the Scottish countryside.\\n\\nThis was my first ride with the new @roswheel rack and pannier on the @kinesisbikes_uk G2 and I\'m really pleased with how it\'s transformed the bike. It feels ready for anything, whether that\'s a coffee ride, an overnight adventure or simply carrying all the snacks.\\n\\nI also took out my new @pamera.cs jersey which definitely isn\'t for anyone who likes to blend into the background. Life\'s too short for boring cycling kit and it was so comfortable. With the 3 pockets on the back, I was able to carry my @snacket_official and phone like I would with a regular jersey.\\n\\nAnd of course, thanks to the @akaso_official I managed to capture one of the most ridiculous photos I\'ve ever taken. What appears to be a giant arm descending from the clouds is, in fact, my leg. I\'ll let you figure that one out. \\n\\nA few new adventures waiting to happen I think.\\n\\n#bikeadventure #kinesis #roswheel #pameraclothing #gbscotland",0,"06/12/2026 05:24",https://www.instagram.com/p/DZfFk7EDY84/,IG carousel,,Lifetime,4016,126,5,21,0,,\n' +
+'17922931521143434,17841406724420934,roswheel,Roswheel,"Worst headwinds, best kebabs. @wehementman and his mate surviving the miles on the Latvian country roads. \\U0001f4a8\\U0001f599 Ride bikes, be happy.",0,"06/10/2026 22:18",https://www.instagram.com/p/DZbv-0VAEbs/,IG carousel,,Lifetime,464,7,0,0,0,192,0\n' +
+'18120156319763101,17841406817196973,dimbal88,"Dimitri Baldassarra [\\U0001f140\\U0001f139\\U0001f145\\U0001f147\\U0001f13a\\U0001f142\\U0001f142 \\U0001f132\\U0001f144\\U0001f130\\U0001f132\\U0001f133]","""LA PRIMA USCITA NON SI SCORDA MAI""\\nEbbene sì\\U0001f60a finalmente la BUILD 1.0 fa i suoi primi 40km.  Un giro soft dopo lavoro che mi ha fatto emozionare, per chi ha seguito l\'intero processo di costruzione sa quanto abbia sudato per arrivare al risultato finale e sentire che va liscia come l\'olio, che tutto scorre senza il minimo cigolio mi rende molto orgoglioso. Devo dire che in pianura e in discesa va una meraviglia\\U0001f601in salita...vabbè non posso pretendere molto né da lei né da me stesso\\U0001f923 ma come dice una frase che mi affascina molto ""la struttura alare del calabrone non è adatta al volo ma lui non lo sa e vola lo stesso"".\\n#cyclinglife #cyclingpassion #nevergiveup #build1.0\\n@roswheel se ti piace fare bikepaking dai un\'occhiata a questa pagina\\U0001f601 e se vuoi acquistare e risparmiare qualcosina usa il mio codice sconto ""dimbal88"" e non te ne pentirai, CIAOOOO\\U0001f44b\\U0001f44b\\U0001f44b\\U0001f44b",0,"06/08/2026 21:49",https://www.instagram.com/p/DZWjJL6jUQ5/,IG image,,Lifetime,3453,227,1,10,0,,\n' +
+'18102753347086344,17841406724420934,roswheel,Roswheel,"A 102km loop around Lake Constance. @rennradlwadl  logging a weekend bikepacking trip with his 4-year-old daughter, complete with a ferry crossing.\\n\\n #Roswheel #cyclinglife #RoadCycling #BicycleBag #CyclingCommunity",0,"06/08/2026 21:00",https://www.instagram.com/p/DZWdenMjLPo/,IG carousel,,Lifetime,721,20,0,0,0,329,0\n' +
+'18592628767001922,17841406724420934,roswheel,Roswheel,"6 AM Saturday. @endurance_skills  logging a solid 50km on his Bianchi along the Rhine to sweat out a brutal work week. \\n\\n #RoadCycling #cyclingculture #cyclinglife #BicycleBag #Roswheel",0,"06/05/2026 20:40",https://www.instagram.com/p/DZOsxLuFc10/,IG carousel,,Lifetime,803,37,2,0,0,398,2\n' +
+'17934040932272408,17841402829719123,la_plakki,"Erika Placchi","\" IL MONDO È UN LIBRO… E CHI NON VIAGGIA NE CONOSCE SOLO UNA PAGINA…!!!\\U0001f6b4\\u200d\\u2640\\ufe0f\\U0001f6b4\\U0001f3fc\\u200d\\u2642\\ufe0f\\n\\nPEDALARE SOTTOVOCE CON LE VIGNE NEGLI OCCHI\\nE LA COLLINA TROVA SEMPRE UN MODO PER ACCAREZZARTI…\\U0001f90d\\n\\nGRAZIE @fedebikeservice @monferrando \\nSei stata Pazzesca e mi hai fatto battere forte il cuore!!!\\U0001f525\\U0001faf6\\U0001f3fc \\n\\n#dontstopbelieving #labicisalveràilmondo\\U0001f918\\U0001f918\\U0001f918 \\n\\n@free_wheels_cucciago \\n@gravelers.cc",0,"06/04/2026 10:46",https://www.instagram.com/p/DZLEB_8DfpW/,IG carousel,,Lifetime,7551,187,5,4,0,,\n' +
+'17858675139643148,17841406724420934,roswheel,Roswheel,"Bikes built, boxes thrown away. @pedalando_liberi and his partner are on the coast of Lima, ready to start a massive multi-month journey down to Ushuaia.\\n\\n #BicycleTouring #CyclingLife #ROSWHEEL #BikePacking #BikeAdventure",0,"06/03/2026 23:51",https://www.instagram.com/p/DZJ5CXiDb4e/,IG carousel,,Lifetime,1110,60,0,2,0,504,2\n' +
+'18123592237637109,17841413594041738,pedalando_liberi,"Francesco Ciullo","Due settimane di viaggio in Sud America e i primi test veri sul campo! \\U0001f3d4\\ufe0f\\U0001f6f2\\n\\nNel video di oggi vi porto direttamente on the road per mostrarvi il mio setup definitivo di borse Roswheel. Non volevo parlarvene da casa: ho preferito aspettare, caricarle, sporcarle per bene di polvere e fango e vedere come reagivano alle prime sollecitazioni delle Ande.\\n\\nVi mostro nel dettaglio:\\n\\n \u2022Come si montano sul telaio e sui portapacchi.\\n \u2022Le caratteristiche tecniche, la capienza reale e i volumi di ciascun modello.\\n \u2022A cosa servono i diversi scomparti e come facilitano la routine quotidiana in sella.\\n\\nIn queste prime due settimane le borse si sono dimostrate affidabili anche sullo sterrato, e ora sono curioso di vedere come si comporteranno lungo tutto il viaggio.\\n\\nUn enorme ringraziamento a @roswheel per aver  deciso di supportarmi in questa avventura! \\U0001f64f\\n\\n#cicloturismo #recensione #biketravel",96,"06/03/2026 04:04",https://www.instagram.com/reel/DZHwZEuq7JK/,IG reel,,Lifetime,10991,391,6,24,0,,\n' +
+'17964141881936025,17841401243655120,fabiolavavassorii,Fabíolaâ\\u009d\\u0084ï¸\\u008f,"\\U0001f4cdEpica Camonica \u2022 \\u2197\\ufe0fSU & \\u2198\\ufe0fGIÙ \\n\\n167km \\U0001f91d\\U0001f3fb 2.316m D+\\n\\nUn viaggio attraverso i tre grandi bacini della Val Camonica, partendo da Pisogne e passando per Breno, toccando Edolo e arrivando a Ponte di Legno - perché l\'Epica Camonica si fa in discesa, ma io volevo l\'experience completa \\U0001f6f2\\U0001f4a8 e quindi partenza alle 6.30, col sole ancora timido dietro alle nuvole e il din-don dei campanacci delle mucche ad animare i campi attraverso cui passavo; pausa seconda colazione al tavolino di legno con il Badile che mi guardava, e che impressione pedalare guardando tutte le sue pareti dalla sud-ovest alla nord, scoprendolo larghissimo di fronte e appuntitissimo di lato \\u26f0\\ufe0f\\nChe meraviglia girare in bici scoprendo quei paesini con le vie strette e le case in pietra, con i bimbi che giocano a palla per strada e tutti che ti salutano - anche perché ho sbagliato strada tre volte, quindi per forza che son venuti a parlarmi \\U0001f602\\nArrivo a Ponte un po\' cucinata (causa tre salite così\\U0001faf8\\U0001f3fc) e con la consapevolezza che il ritorno non sarebbe stato tutta discesa, ma dopo due panini e due lemon ero more or less \"come nuova\" e tenuta insieme dal Polase e dalle caramelline zuccherine \\U0001f60b\\nGrande ringraziamento a @roswheel per avermi accompagnata in questo viaggio e avermi permesso di caricare tutto il necessario (dal cibo, ai vestiti, al kit di riparazione gomme - insomma, un sacco di roba) sulla parte anteriore della bici, nella Handlebar Bag mega capiente \\U0001faf6\\U0001f3fc\\n\\nChe dire,\\nè proprio vero che pre-occuparsi serve solo a faticare: tante pare sul \"non lo so se ci riesco, non ho mai fatto così tanti km e dislivello\" e invece li ho fatti, sono tornata e forse son pronta per farne ancora di più \\U0001f60e\\n\\n\\U0001f6b5\\u200d\\u2640\\ufe0f\\u2600\\ufe0f\\u26f0\\ufe0f\\U0001f7a9\\n\\n#gravel\\n#valcamonica\\n#epicacamonica\\n#roswheel\\n#bikepacking",0,"06/02/2026 10:18",https://www.instagram.com/p/DZF3SI2jOPM/,IG carousel,,Lifetime,13307,565,7,21,0,,\n' +
+'';
+
+function parsePostsCSV(csvText) {
+  var lines = csvText.trim().split('\n');
+  if (lines.length < 2) return [];
+  var headers = lines[0].split(',');
+  var rows = [];
+  for (var i = 1; i < lines.length; i++) {
+    var vals = [];
+    var cur = '', inQuotes = false;
+    for (var ch of lines[i]) {
+      if (ch === '"') { inQuotes = !inQuotes; }
+      else if (ch === ',' && !inQuotes) { vals.push(cur); cur = ''; }
+      else { cur += ch; }
+    }
+    vals.push(cur);
+    var row = {};
+    for (var h = 0; h < headers.length; h++) { row[headers[h]] = vals[h] || ''; }
+    rows.push(row);
+  }
+  return rows;
+}
+
+
+
+function getPostInteractionTotal(p) {
+  var likes = parseInt(p.Likes) || 0;
+  var comments = parseInt(p.Comments) || 0;
+  var shares = parseInt(p.Shares) || 0;
+  var saves = parseInt(p.Saves) || 0;
+  return likes + comments + shares + saves;
+}
+
+function setPostSort(mode) {
+  postSort = mode;
+  renderPosts();
+}
+
+function parsePostDate(dateStr) {
+  var parts = dateStr.trim().split(' ')[0].split('/');
+  if (parts.length !== 3) return null;
+  return parts[2] + '-' + parts[0].padStart(2,'0') + '-' + parts[1].padStart(2,'0');
+}
+
+function formatNum(n) {
+  if (n >= 10000) return (n/1000).toFixed(1).replace(/\.0$/,'') + 'k';
+  return n.toLocaleString();
+}
+
+function renderPosts() {
+  var L = PLATFORM_LABELS[platform];
+  var grid = document.getElementById('postsGrid');
+  if (posts.length === 0) {
+    grid.innerHTML = '<div class="posts-empty">No post data available.</div>';
+    return;
+  }
+  var latest = data.length > 0 ? data[0].date : null;
+  var cutoff = null;
+  if (latest) {
+    var d = new Date(latest);
+    d.setDate(d.getDate() - period + 1);
+    cutoff = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  var filtered = posts;
+  if (cutoff) {
+    filtered = posts.filter(function(p) {
+      var pd = parsePostDate(p['Publish time'] || '');
+      return pd && pd >= cutoff;
+    });
+  }
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="posts-empty">No posts in this period.</div>';
+    return;
+  }
+  var sorted = filtered.slice();
+  sorted.sort(function(a, b) {
+    if (postSort === 'views') return (parseInt(b.Views)||0) - (parseInt(a.Views)||0);
+    if (postSort === 'reach') return (parseInt(b.Reach)||0) - (parseInt(a.Reach)||0);
+    return getPostInteractionTotal(b) - getPostInteractionTotal(a);
+  });
+  var top5 = sorted.slice(0, 5);
+  var html = '';
+  for (var i = 0; i < top5.length; i++) {
+    var p = top5[i];
+    var desc = (p.Description || '').replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim();
+    if (desc.length > 80) desc = desc.substring(0, 80) + '...';
+    var total = getPostInteractionTotal(p);
+    var typeLabel = (p['Post type'] || '').trim().replace(/^IG\s+/i, '');
+    html += '<div class="post-card">';
+    html += '<div class="pc-header">';
+    html += '<span class="username">@' + (p['Account username']||'').trim() + '</span>';
+    html += '<span class="type-badge">' + typeLabel + '</span>';
+    html += '</div>';
+    html += '<div class="pc-metrics">';
+    html += '<div class="pc-metric"><span class="label">' + L.insFields[0] + '</span><span class="value">' + formatNum(parseInt(p.Views)||0) + '</span></div>';
+    html += '<div class="pc-metric"><span class="label">' + L.insFields[1] + '</span><span class="value">' + formatNum(parseInt(p.Likes)||0) + '</span></div>';
+    html += '<div class="pc-metric"><span class="label">' + L.insFields[2] + '</span><span class="value">' + formatNum(parseInt(p.Comments)||0) + '</span></div>';
+    html += '<div class="pc-metric"><span class="label">' + L.insFields[3] + '</span><span class="value">' + formatNum(parseInt(p.Shares)||0) + '</span></div>';
+    html += '<div class="pc-metric"><span class="label">' + L.insFields[4] + '</span><span class="value">' + formatNum(parseInt(p.Saves)||0) + '</span></div>';
+    html += '<div class="pc-metric total"><span class="label">Total</span><span class="value">' + formatNum(total) + '</span></div>';
+    html += '</div>';
+    html += '<div class="pc-footer">';
+    html += '<div class="pc-desc">' + (desc || 'No description') + '</div>';
+    html += '<div class="pc-link"><a href="' + p.Permalink + '" target="_blank" rel="noopener">' + L.pageLinkText + '</a></div>';
+    html += '</div>';
+    html += '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+var chartMain = null, chartAux = null, chartAux2 = null;
+
+function filterByPeriod() {
+  if (data.length === 0) return [];
+  var latest = data[0].date;
+  var cutoff = new Date(latest);
+  cutoff.setDate(cutoff.getDate() - period + 1);
+  var cutoffStr = cutoff.getFullYear() + '-' + String(cutoff.getMonth()+1).padStart(2,'0') + '-' + String(cutoff.getDate()).padStart(2,'0');
+  return data.filter(function(r) { return r.date >= cutoffStr; });
+}
+
+function setPeriod(days) {
+  period = days;
+  document.querySelectorAll('.period-pill').forEach(function(b) { b.classList.toggle('active', parseInt(b.dataset.days) === days); });
+  renderAll();
+  renderPosts();
+}
+
+
+
+
+
+function renderAll() {
+  var filtered = filterByPeriod();
+  var note = document.getElementById('periodNote');
+  note.textContent = data.length > filtered.length ? '(Available: ' + filtered.length + ' days)' : '';
+  var hasDelay = false;
+  for (var ri = 0; ri < filtered.length; ri++) {
+    if (filtered[ri].follows === null || filtered[ri].follows === undefined) { hasDelay = true; break; }
+  }
+  document.getElementById('delayBanner').style.display = hasDelay ? 'flex' : 'none';
+  renderCards(filtered);
+  renderSummary(filtered);
+  renderCharts(filtered);
+  renderTable(filtered);
+  renderAnalysis(filtered);
+}
+
+function renderCards(filtered) {
+  var container = document.getElementById('overviewCards');
+  if (data.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">&#128200;</div><p>No data yet. Start by adding your first daily snapshot.</p></div>';
+    return;
+  }
+  var latest = filtered[0];
+  var prev = filtered.length >= 2 ? filtered[1] : null;
+  function chg(cur, prevVal) {
+    if (prevVal === null || prevVal === undefined) return '<span class="change flat">&mdash;</span>';
+    if (prevVal === 0) return cur > 0 ? '<span class="change up">New</span>' : '<span class="change flat">&mdash;</span>';
+    var pct = ((cur - prevVal) / prevVal * 100).toFixed(1);
+    if (pct > 0) return '<span class="change up">&#9650; ' + pct + '%</span>';
+    if (pct < 0) return '<span class="change down">&#9660; ' + Math.abs(pct) + '%</span>';
+    return '<span class="change flat">&#9644; 0%</span>';
+  }
+  var L = PLATFORM_LABELS[platform];
+  var cards = [
+    { label: L.cardViews, value: latest.views, prev: prev ? prev.views : null },
+    { label: L.cardReach, value: latest.reach, prev: prev ? prev.reach : null },
+    { label: L.cardInteractions, value: latest.interactions, prev: prev ? prev.interactions : null },
+    { label: L.cardLinkClicks, value: latest.linkClicks, prev: prev ? prev.linkClicks : null },
+    { label: L.cardProfileVisits, value: latest.profileVisits, prev: prev ? prev.profileVisits : null },
+    { label: L.cardFollows, value: latest.follows, prev: prev ? prev.follows : null, isFollows: true }
+  ];
+  var latestTF = (latest.total_followers !== null && latest.total_followers !== undefined) ? latest.total_followers : 8655;
+  var prevTF = (prev && prev.total_followers !== null && prev.total_followers !== undefined) ? prev.total_followers : null;
+  var cardsHtml = '';
+  cardsHtml += '<div class="total-followers-card"><div class="tf-label">' + L.lblTotalFollowers + '</div><div class="tf-value">' + latestTF.toLocaleString() + '</div>' + chg(latestTF, prevTF) + '</div>';
+  cardsHtml += cards.map(function(c) {
+    if (c.isFollows && (c.value === null || c.value === undefined)) {
+      return '<div class="metric-card"><div class="label">' + c.label + '</div><div class="value delay-text">延迟中</div><span class="change flat">&mdash;</span></div>';
+    }
+    return '<div class="metric-card"><div class="label">' + c.label + '</div><div class="value">' + c.value.toLocaleString() + '</div>' + chg(c.value, c.prev) + '</div>';
+  }).join('');
+  container.innerHTML = cardsHtml;
+}
+
+function renderSummary(filtered) {
+  var container = document.getElementById('summaryCards');
+  if (filtered.length === 0) { container.innerHTML = ''; return; }
+  var n = filtered.length;
+  function sum(field) { return filtered.reduce(function(s, r) { return s + r[field]; }, 0); }
+  function fmt(v) { return v.toLocaleString(); }
+
+  function sumTotalFollowers() { var s = 0; for (var ri = filtered.length-1; ri >= 0; ri--) { if (filtered[ri].total_followers !== null && filtered[ri].total_followers !== undefined) { return filtered[ri].total_followers; } } return 8655; }
+  var tfTotal = sumTotalFollowers();
+  var L = PLATFORM_LABELS[platform];
+  var items = [
+    { label: L.sumViews, main: fmt(sum('views')), sub: 'Avg ' + fmt(Math.round(sum('views') / n)) + '/day' },
+    { label: L.sumReach, main: fmt(sum('reach')), sub: 'Avg ' + fmt(Math.round(sum('reach') / n)) + '/day' },
+    { label: L.sumInteractions, main: fmt(sum('interactions')), sub: 'Avg ' + fmt(Math.round(sum('interactions') / n)) + '/day' },
+    { label: L.sumPV, main: fmt(sum('profileVisits')), sub: 'Avg ' + fmt(Math.round(sum('profileVisits') / n)) + '/day' },
+    { label: L.lblTotalFollowers, main: fmt(tfTotal), sub: '最新快照', extraClass: 'followers' }
+  ];
+  container.innerHTML = items.map(function(item) {
+    var cls = item.extraClass ? 'summary-card ' + item.extraClass : 'summary-card';
+    return '<div class="' + cls + '"><div class="label">' + item.label + '</div><div class="main-val">' + item.main + '</div><div class="sub-val">' + item.sub + '</div></div>';
+  }).join('');
+}
+
+function renderCharts(filtered) {
+  var L = PLATFORM_LABELS[platform];
+  var ctx1 = document.getElementById('chartMain');
+  if (chartMain) chartMain.destroy();
+  var ctx3 = document.getElementById('chartAux2');
+  if (chartAux2) chartAux2.destroy();
+  if (filtered.length === 0) {
+    return;
+  }
+
+  var sorted = [].concat(filtered).sort(function(a, b) { return a.date.localeCompare(b.date); });
+  var labels = sorted.map(function(r) { return r.date; });
+
+  chartMain = new Chart(ctx1.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: L.chartLegend[0], data: sorted.map(function(r) { return r.views; }), borderColor: '#6c5ce7', backgroundColor: 'rgba(108,92,231,0.06)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#6c5ce7', tension: 0.3, fill: true, yAxisID: 'y' },
+        { label: L.chartLegend[1], data: sorted.map(function(r) { return r.reach; }), borderColor: '#fdcb6e', backgroundColor: 'rgba(253,203,110,0.04)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#fdcb6e', tension: 0.3, fill: true, yAxisID: 'y' },
+        { label: L.chartLegend[2], data: sorted.map(function(r) { return r.interactions; }), borderColor: '#00cec9', backgroundColor: 'rgba(0,206,201,0.04)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#00cec9', tension: 0.3, fill: true, yAxisID: 'y' },
+        { label: L.chartLegend[3], type: 'bar', data: sorted.map(function(r) { return r.follows === null || r.follows === undefined ? null : r.follows; }), backgroundColor: 'rgba(155,89,182,0.5)', borderColor: '#9b59b6', borderWidth: 1, barPercentage: 0.4, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 16, boxWidth: 10 } } },
+      scales: {
+        x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
+        y: { type: 'linear', position: 'left', title: { display: true, text: L.chartYTitle, color: '#4a4a6a' }, ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true },
+        y1: { type: 'linear', position: 'right', title: { display: true, text: L.chartY1Title, color: '#9b59b6' }, ticks: { color: '#9b59b6' }, grid: { drawOnChartArea: false }, beginAtZero: true }
+      }
+    }
+  });
+
+  chartAux2 = new Chart(ctx3.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: L.chartAuxLegend[0], data: sorted.map(function(r) { return r.profileVisits; }), borderColor: '#a29bfe', backgroundColor: 'rgba(162,155,254,0.06)', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#a29bfe', tension: 0.3, fill: true }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 16, boxWidth: 10 } } },
+      scales: {
+        x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
+        y: { ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function renderTable(filtered) {
+  var wrap = document.getElementById('dsDataTable');
+  var count = document.getElementById('recordCount');
+  if (filtered.length === 0) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128203;</div><p>No data yet. Start by adding your first daily snapshot.</p></div>';
+    count.textContent = '0 records';
+    return;
+  }
+  count.textContent = filtered.length + ' record' + (filtered.length > 1 ? 's' : '');
+  var L = PLATFORM_LABELS[platform];
+  var rows = filtered.map(function(r) {
+    var fVal = (r.follows === null || r.follows === undefined)
+      ? '<span class="delay-text">延迟中</span>'
+      : r.follows.toLocaleString();
+    var tfVal = (r.total_followers !== null && r.total_followers !== undefined)
+      ? r.total_followers.toLocaleString()
+      : '<span class="delay-text">-</span>';
+    return '<tr><td>' + r.date + '</td><td class="num">' + r.views.toLocaleString() + '</td><td class="num">' + r.reach.toLocaleString() + '</td><td class="num">' + r.interactions.toLocaleString() + '</td><td class="num">' + r.linkClicks.toLocaleString() + '</td><td class="num">' + r.profileVisits.toLocaleString() + '</td><td class="num">' + fVal + '</td><td class="num">' + tfVal + '</td></tr>';
+  }).join('');
+  wrap.innerHTML = '<table class="data-table"><thead><tr><th>' + L.tableCols[0] + '</th><th>' + L.tableCols[1] + '</th><th>' + L.tableCols[2] + '</th><th>' + L.tableCols[3] + '</th><th>' + L.tableCols[4] + '</th><th>' + L.tableCols[5] + '</th><th>' + L.tableCols[6] + '</th><th>' + L.tableCols[7] + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function renderAnalysis(filtered) {
+  var L = PLATFORM_LABELS[platform];
+  var grid = document.getElementById('aiGrid');
+  var label = document.getElementById('aiPeriodLabel');
+  label.textContent = '近' + period + '天';
+  if (filtered.length < 2) {
+    grid.innerHTML = '<div class="ai-empty">数据不足，至少需要2天快照才能生成分析。</div>';
+    return;
+  }
+  var sorted = [].concat(filtered).sort(function(a, b) { return a.date.localeCompare(b.date); });
+  var n = sorted.length;
+  var first = sorted[0], last = sorted[n - 1];
+
+  // 1. 趋势判断
+  function trendPct(cur, prev) {
+    if (prev === 0) return cur > 0 ? 100 : 0;
+    return ((cur - prev) / prev * 100).toFixed(1);
+  }
+  var vTrend = trendPct(last.views, first.views);
+  var rTrend = trendPct(last.reach, first.reach);
+  var iTrend = trendPct(last.interactions, first.interactions);
+  var fFirst, fLast;
+  for (var fi = 0; fi < sorted.length; fi++) { if (sorted[fi].follows !== null && sorted[fi].follows !== undefined) { fFirst = sorted[fi]; break; } }
+  for (var fj = sorted.length - 1; fj >= 0; fj--) { if (sorted[fj].follows !== null && sorted[fj].follows !== undefined) { fLast = sorted[fj]; break; } }
+  var fTrend = 'N/A';
+  if (fFirst && fLast) { fTrend = trendPct(fLast.follows, fFirst.follows); }
+
+  function trendHTML(val, label) {
+    var cls = 'ai-trend', icon = '', dir = '';
+    if (val > 0) { cls += ' up'; icon = '&#9650;'; dir = '上升'; }
+    else if (val < 0) { cls += ' down'; icon = '&#9660;'; dir = '下降'; val = Math.abs(val); }
+    else { dir = '持平'; }
+    return '<span class="' + cls + '">' + icon + ' ' + label + ' ' + dir + ' ' + val + '%</span>';
+  }
+
+  // 2. 峰值识别
+  function peak(arr, field) {
+    var max = arr[0][field], maxDate = arr[0].date;
+    for (var i = 1; i < arr.length; i++) {
+      if (arr[i][field] > max) { max = arr[i][field]; maxDate = arr[i].date; }
+    }
+    return { date: maxDate, value: max };
+  }
+  var vPeak = peak(sorted, 'views');
+  var rPeak = peak(sorted, 'reach');
+  var iPeak = peak(sorted, 'interactions');
+  var fPeakVal = null, fPeakDate = 'N/A';
+  for (var fpi = 0; fpi < sorted.length; fpi++) {
+    var fv = sorted[fpi].follows;
+    if (fv !== null && fv !== undefined && (fPeakVal === null || fv > fPeakVal)) { fPeakVal = fv; fPeakDate = sorted[fpi].date; }
+  }
+
+  // 3. 异常检测 (>50% 日波动)
+  function anomalies(arr, field) {
+    var anoms = [];
+    for (var i = 1; i < arr.length; i++) {
+      var prev = arr[i-1][field], cur = arr[i][field];
+      if (prev === null || prev === undefined || cur === null || cur === undefined) continue;
+      if (prev === 0 && cur === 0) continue;
+      var chg = prev === 0 ? 100 : Math.abs((cur - prev) / prev * 100);
+      if (chg > 50) anoms.push({ date: arr[i].date, field: field, change: chg.toFixed(0) + '%' });
+    }
+    return anoms;
+  }
+  var allAnoms = anomalies(sorted, 'views').concat(anomalies(sorted, 'reach')).concat(anomalies(sorted, 'interactions')).concat(anomalies(sorted, 'follows'));
+  // dedupe by date
+  var seen = {};
+  var uniqAnoms = [];
+  for (var i = 0; i < allAnoms.length; i++) {
+    if (!seen[allAnoms[i].date]) { seen[allAnoms[i].date] = true; uniqAnoms.push(allAnoms[i]); }
+  }
+
+  // 4. 互动率
+  var totalViews = sorted.reduce(function(s, r) { return s + r.views; }, 0);
+  var totalInts = sorted.reduce(function(s, r) { return s + r.interactions; }, 0);
+  var engRate = totalViews > 0 ? (totalInts / totalViews * 100).toFixed(2) : 0;
+
+  // 5. 粉丝转化
+  var totalPV = sorted.reduce(function(s, r) { return s + r.profileVisits; }, 0);
+  var totalFollows = sorted.reduce(function(s, r) { return s + (r.follows === null || r.follows === undefined ? 0 : r.follows); }, 0);
+  var followsN = 0;
+  for (var fni = 0; fni < sorted.length; fni++) { if (sorted[fni].follows !== null && sorted[fni].follows !== undefined) followsN++; }
+  var followRate = followsN > 0 ? (totalFollows / totalPV * 100).toFixed(1) : 'N/A';
+
+  // 洞察卡片
+  var insights = [
+    { label: L.analyticsViews, value: trendHTML(vTrend, '') },
+    { label: L.analyticsReach, value: trendHTML(rTrend, '') },
+    { label: '交互趋势', value: trendHTML(iTrend, '') },
+    { label: '粉丝趋势', value: fTrend === 'N/A' ? '<span class="ai-na">数据不足</span>' : trendHTML(fTrend, '') },
+    { label: L.analyticsVPeak, value: vPeak.value.toLocaleString(), sub: vPeak.date },
+    { label: L.analyticsIPeak, value: iPeak.value.toLocaleString(), sub: iPeak.date },
+    { label: '互动率', value: engRate + '%', sub: engRate >= 4 ? '健康' : engRate >= 2 ? '一般' : '偏低' },
+    { label: '粉丝转化', value: followRate === 'N/A' ? 'N/A' : followRate + '%', sub: '主页访问→关注' },
+    { label: '异常波动', value: uniqAnoms.length + ' 天', sub: uniqAnoms.length > 0 ? uniqAnoms.map(function(a) { return a.date; }).join(', ') : '无异常' }
+  ];
+
+  // 建议生成
+  var suggestions = [];
+  if (parseFloat(engRate) < 3) suggestions.push('互动率偏低（' + engRate + '%），建议在帖子末尾增加互动引导（提问、投票、评论区抽奖），提升用户参与度。');
+  if (parseFloat(rTrend) < -10) suggestions.push((platform==='xhs'?'曝光量':'触达量') + '下降 ' + Math.abs(rTrend) + '% ，建议调整发布时间或尝试 ' + (platform==='xhs'?'视频笔记 / 话题标签':'Reels / 话题标签') + '策略来扩大曝光。');
+  if (parseFloat(vTrend) < -10) suggestions.push((platform==='xhs'?'阅读量':'观看量') + '下降 ' + Math.abs(vTrend) + '% ，建议分析高' + (platform==='xhs'?'阅读量笔记':'播放量帖子') + '的共同特征（时长、内容类型、发布时间）并复刻。');
+  if (uniqAnoms.length >= 3) suggestions.push('近' + period + '天内出现 ' + uniqAnoms.length + ' 天异常波动，建议检查是否有外部事件影响（平台算法变更、竞品活动等），保持内容发布节奏稳定。');
+  if (followRate !== 'N/A' && parseFloat(followRate) < 2) suggestions.push('粉丝转化率仅 ' + followRate + '% ，建议在个人简介页优化引导、增加关注按钮提醒，或通过限时活动（抽奖/福利）促转化。');
+  if (suggestions.length < 3) {
+    suggestions.push('数据表现整体平稳，继续保持当前发布频率和内容策略，关注互动率变化趋势。');
+    if (iPeak.value > 0) suggestions.push('交互量峰值出现在 ' + iPeak.date + '（' + iPeak.value.toLocaleString() + '），建议复盘当日帖子内容，提取成功要素并移植到后续内容中。');
+  }
+  if (suggestions.length < 3) suggestions.push('各项指标均在健康范围内，可尝试拓展内容形式（如 Reels、直播）探索增长新曲线。');
+
+  var insightHTML = insights.map(function(item) {
+    return '<div class="ai-insight-card"><div class="ai-label">' + item.label + '</div><div class="ai-value">' + item.value + '</div>' + (item.sub ? '<div class="ai-sub">' + item.sub + '</div>' : '') + '</div>';
+  }).join('');
+
+  var sugHTML = '<div class="ai-suggestions"><div class="ai-title">&#128161; 改进建议</div>' +
+    suggestions.map(function(s) { return '<div class="ai-suggestion-item"><div class="ai-bullet"></div><div>' + s + '</div></div>'; }).join('') +
+    '</div>';
+
+  grid.innerHTML = '<div class="ai-insights">' + insightHTML + '</div>' + sugHTML;
+}
+
+
+
+
+
+
+function renderXhsPosts() {
+  var grid = document.getElementById('postsGrid');
+  grid.innerHTML = '<div class="posts-empty">暂无笔记数据，请导入或抓取数据。</div>';
+}
+
+function init() {
+  // Ins daily data — hardcoded for shareable standalone use
+  insData = [
+      { date: '2026-06-23', views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 1, total_followers: 8665 },
+      { date: '2026-06-22', views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 1, total_followers: 8664 },
+      { date: '2026-06-21', views: 4715, reach: 53, interactions: 191, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8663 },
+      { date: '2026-06-20', views: 4332, reach: 29, interactions: 243, linkClicks: 0, profileVisits: 21, follows: 1, total_followers: 8659 },
+      { date: '2026-06-19', views: 1600, reach: 27, interactions: 70, linkClicks: 0, profileVisits: 17, follows: 1, total_followers: 8658 },
+      { date: '2026-06-18', views: 2096, reach: 31, interactions: 94, linkClicks: 0, profileVisits: 22, follows: 1, total_followers: 8657 },
+      { date: '2026-06-17', views: 2301, reach: 71, interactions: 79, linkClicks: 0, profileVisits: 20, follows: 1, total_followers: 8656 },
+      { date: '2026-06-16', views: 6187, reach: 262, interactions: 156, linkClicks: 0, profileVisits: 35, follows: 0, total_followers: 8655 },
+      { date: '2026-06-15', views: 3762, reach: 65, interactions: 171, linkClicks: 0, profileVisits: 73, follows: 0, total_followers: 8655 },
+      { date: '2026-06-14', views: 1659, reach: 82, interactions: 85, linkClicks: 0, profileVisits: 46, follows: 4, total_followers: 8655 },
+      { date: '2026-06-13', views: 1245, reach: 219, interactions: 55, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8651 },
+      { date: '2026-06-12', views: 1274, reach: 169, interactions: 56, linkClicks: 0, profileVisits: 43, follows: 5, total_followers: 8647 },
+      { date: '2026-06-11', views: 1687, reach: 130, interactions: 55, linkClicks: 0, profileVisits: 194, follows: 4, total_followers: 8642 },
+      { date: '2026-06-10', views: 1780, reach: 116, interactions: 64, linkClicks: 0, profileVisits: 44, follows: 6, total_followers: 8638 },
+      { date: '2026-06-09', views: 2928, reach: 136, interactions: 155, linkClicks: 0, profileVisits: 57, follows: 8, total_followers: 8632 },
+      { date: '2026-06-08', views: 2392, reach: 115, interactions: 121, linkClicks: 0, profileVisits: 55, follows: 10, total_followers: 8624 },
+      { date: '2026-06-07', views: 1823, reach: 84, interactions: 123, linkClicks: 0, profileVisits: 24, follows: 6, total_followers: 8614 },
+      { date: '2026-06-06', views: 1931, reach: 238, interactions: 116, linkClicks: 0, profileVisits: 26, follows: 5, total_followers: 8608 },
+      { date: '2026-06-05', views: 2833, reach: 244, interactions: 126, linkClicks: 0, profileVisits: 39, follows: 9, total_followers: 8603 },
+      { date: '2026-06-04', views: 2993, reach: 214, interactions: 169, linkClicks: 0, profileVisits: 61, follows: 11, total_followers: 8594 },
+      { date: '2026-06-03', views: 6436, reach: 61, interactions: 293, linkClicks: 0, profileVisits: 71, follows: 6, total_followers: 8583 },
+      { date: '2026-06-02', views: 2019, reach: 225, interactions: 100, linkClicks: 0, profileVisits: 85, follows: 5, total_followers: 8577 },
+      { date: '2026-06-01', views: 878, reach: 23, interactions: 34, linkClicks: 0, profileVisits: 27, follows: 5, total_followers: 8572 },
+      { date: '2026-05-31', views: 1307, reach: 29, interactions: 61, linkClicks: 0, profileVisits: 24, follows: 1, total_followers: 8567 },
+      { date: '2026-05-30', views: 1341, reach: 88, interactions: 65, linkClicks: 0, profileVisits: 13, follows: 1, total_followers: 8566 },
+      { date: '2026-05-29', views: 1662, reach: 446, interactions: 52, linkClicks: 0, profileVisits: 104, follows: 5, total_followers: 8565 },
+      { date: '2026-05-28', views: 1462, reach: 82, interactions: 61, linkClicks: 0, profileVisits: 34, follows: 6, total_followers: 8560 },
+      { date: '2026-05-27', views: 2190, reach: 88, interactions: 75, linkClicks: 0, profileVisits: 36, follows: 5, total_followers: 8554 },
+      { date: '2026-05-26', views: 2457, reach: 182, interactions: 81, linkClicks: 0, profileVisits: 37, follows: 8, total_followers: 8549 },
+      { date: '2026-05-25', views: 3514, reach: 286, interactions: 141, linkClicks: 0, profileVisits: 51, follows: null, total_followers: 8541 }
+    ];
+  // XHS 30-day daily data — hardcoded for shareable standalone use
+  xhsData = [{"date":"2026-06-22","views":19,"reach":403,"interactions":3,"linkClicks":0,"profileVisits":4,"follows":0,"total_followers":558},{"date":"2026-06-21","views":3,"reach":72,"interactions":1,"linkClicks":0,"profileVisits":2,"follows":0,"total_followers":558},{"date":"2026-06-20","views":3,"reach":72,"interactions":1,"linkClicks":0,"profileVisits":2,"follows":0,"total_followers":558},{"date":"2026-06-19","views":5,"reach":60,"interactions":0,"linkClicks":0,"profileVisits":0,"follows":1,"total_followers":558},{"date":"2026-06-18","views":17,"reach":123,"interactions":1,"linkClicks":0,"profileVisits":2,"follows":0,"total_followers":558},{"date":"2026-06-17","views":10,"reach":118,"interactions":0,"linkClicks":0,"profileVisits":2,"follows":1,"total_followers":558},{"date":"2026-06-16","views":29,"reach":263,"interactions":8,"linkClicks":0,"profileVisits":8,"follows":0,"total_followers":558},{"date":"2026-06-15","views":37,"reach":412,"interactions":5,"linkClicks":0,"profileVisits":4,"follows":0,"total_followers":558},{"date":"2026-06-14","views":8,"reach":120,"interactions":1,"linkClicks":0,"profileVisits":3,"follows":0,"total_followers":558},{"date":"2026-06-13","views":37,"reach":427,"interactions":4,"linkClicks":0,"profileVisits":6,"follows":1,"total_followers":558},{"date":"2026-06-12","views":20,"reach":159,"interactions":0,"linkClicks":0,"profileVisits":4,"follows":0,"total_followers":558},{"date":"2026-06-11","views":24,"reach":337,"interactions":4,"linkClicks":0,"profileVisits":7,"follows":0,"total_followers":558},{"date":"2026-06-10","views":9,"reach":103,"interactions":0,"linkClicks":0,"profileVisits":1,"follows":0,"total_followers":558},{"date":"2026-06-09","views":13,"reach":108,"interactions":1,"linkClicks":0,"profileVisits":2,"follows":0,"total_followers":558},{"date":"2026-06-08","views":8,"reach":121,"interactions":1,"linkClicks":0,"profileVisits":4,"follows":0,"total_followers":558},{"date":"2026-06-07","views":9,"reach":68,"interactions":3,"linkClicks":0,"profileVisits":1,"follows":0,"total_followers":558},{"date":"2026-06-06","views":16,"reach":168,"interactions":0,"linkClicks":0,"profileVisits":4,"follows":0,"total_followers":558},{"date":"2026-06-05","views":102,"reach":675,"interactions":2,"linkClicks":0,"profileVisits":7,"follows":0,"total_followers":558},{"date":"2026-06-04","views":152,"reach":1028,"interactions":12,"linkClicks":0,"profileVisits":11,"follows":1,"total_followers":558},{"date":"2026-06-03","views":26,"reach":361,"interactions":1,"linkClicks":0,"profileVisits":4,"follows":1,"total_followers":558},{"date":"2026-06-02","views":50,"reach":617,"interactions":5,"linkClicks":0,"profileVisits":13,"follows":0,"total_followers":558},{"date":"2026-06-01","views":16,"reach":181,"interactions":1,"linkClicks":0,"profileVisits":3,"follows":0,"total_followers":558},{"date":"2026-05-31","views":8,"reach":129,"interactions":1,"linkClicks":0,"profileVisits":4,"follows":0,"total_followers":558},{"date":"2026-05-30","views":31,"reach":264,"interactions":2,"linkClicks":0,"profileVisits":9,"follows":0,"total_followers":558},{"date":"2026-05-29","views":106,"reach":896,"interactions":4,"linkClicks":0,"profileVisits":15,"follows":0,"total_followers":558},{"date":"2026-05-28","views":105,"reach":805,"interactions":5,"linkClicks":0,"profileVisits":14,"follows":0,"total_followers":558},{"date":"2026-05-27","views":31,"reach":301,"interactions":0,"linkClicks":0,"profileVisits":5,"follows":2,"total_followers":558},{"date":"2026-05-26","views":57,"reach":491,"interactions":4,"linkClicks":0,"profileVisits":12,"follows":1,"total_followers":558},{"date":"2026-05-25","views":17,"reach":226,"interactions":0,"linkClicks":0,"profileVisits":10,"follows":0,"total_followers":558},{"date":"2026-05-24","views":13,"reach":103,"interactions":0,"linkClicks":0,"profileVisits":3,"follows":0,"total_followers":558},{"date":"2026-05-23","views":16,"reach":146,"interactions":4,"linkClicks":0,"profileVisits":2,"follows":0,"total_followers":558},{"date":"2026-05-22","views":35,"reach":491,"interactions":7,"linkClicks":0,"profileVisits":10,"follows":0,"total_followers":558},{"date":"2026-05-21","views":20,"reach":244,"interactions":0,"linkClicks":0,"profileVisits":6,"follows":0,"total_followers":558},{"date":"2026-05-20","views":37,"reach":386,"interactions":6,"linkClicks":0,"profileVisits":13,"follows":1,"total_followers":558},{"date":"2026-05-19","views":132,"reach":878,"interactions":8,"linkClicks":0,"profileVisits":15,"follows":0,"total_followers":558}];
+  data = insData.slice();
+  posts = parsePostsCSV(EMBED_POSTS_CSV);
+  insPosts = posts.slice();
+  renderAll();
+  renderPosts();
+}
 init();
-
 </script>
-
 </body>
-
 </html>
-
