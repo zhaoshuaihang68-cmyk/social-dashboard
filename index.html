@@ -1,80 +1,159 @@
 ﻿<!DOCTYPE html>
+
 <html lang="zh-CN">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Facebook Insights Daily Tracker</title>
+
+<title>社交媒体数据仪表盘</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <style>
+
 :root {
+
   --bg-primary: #f5f6fa;
+
   --bg-secondary: #ffffff;
+
   --bg-card: #ffffff;
+
   --bg-input: #f9fafb;
+
   --border: #e5e7eb;
+
   --text-primary: #1a1a2e;
+
   --text-secondary: #4a4a6a;
+
   --text-muted: #8e8ea0;
+
   --accent: #7c3aed;
+
   --accent2: #00cec9;
+
   --success: #00b894;
+
   --danger: #ff7675;
+
   --warning: #fdcb6e;
+
   --radius: 14px;
+
   --radius-sm: 10px;
+
   --shadow: 0 2px 12px rgba(0,0,0,0.06);
+
 }
+
 *{margin:0;padding:0;box-sizing:border-box;}
+
 body{
+
   font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+
   background: var(--bg-primary); color: var(--text-primary); min-height:100vh;
+
 }
+
 .header{
+
   background: #ffffff; border-bottom:1px solid #e5e7eb;
+
   padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
+
   flex-wrap:wrap; gap:10px;
+
 }
+
 .header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;}
+
 .header .sub{font-size:0.72rem;color:var(--text-muted);display:block;}
+
 .main{padding:20px 28px 28px;max-width:1400px;margin:0 auto;}
+
 .btn{padding:8px 16px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;
+
   border:1px solid var(--border);transition:all .2s;font-family:inherit;}
+
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+
 .btn-primary:hover{background:#6d28d9;}
+
 .btn-secondary{background:var(--bg-input);color:var(--text-primary);}
+
 .btn-secondary:hover{background:#e5e7eb;}
+
 .btn-danger{background:transparent;color:var(--danger);border-color:var(--danger);}
+
 .btn-danger:hover{background:rgba(255,118,117,0.12);}
+
 .btn-sm{padding:5px 10px;font-size:0.7rem;}
+
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+
 .card-header h3{font-size:0.9rem;font-weight:700;}
+
 .delay-banner{
+
   display:flex; align-items:center; justify-content:space-between;
+
   background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(155,89,182,0.04));
+
   border:1px solid rgba(124,58,237,0.18); border-radius:var(--radius-sm);
+
   padding:10px 18px; margin-bottom:18px; font-size:0.78rem; color:#7c3aed;
+
 }
+
 .delay-banner .banner-close{
+
   background:none; border:none; color:#8e8ea0; cursor:pointer; font-size:1.1rem;
+
   padding:0 4px; line-height:1; transition:color .2s;
+
 }
+
 .delay-banner .banner-close:hover{color:#1a1a2e;}
+
 .delay-text{color:var(--text-muted);}
+
 .card-header .sub{font-size:0.7rem;color:var(--text-muted);}
+
 .metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:18px;}
+
 .total-followers-card{
+
   background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(155,89,182,0.05));
+
   border:1.5px solid rgba(124,58,237,0.2); border-radius:var(--radius-sm);
+
   padding:13px 15px; position:relative;
+
 }
+
 .total-followers-card .tf-label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+
 .total-followers-card .tf-value{font-size:1.5rem;font-weight:800;color:var(--text-primary);margin:4px 0;letter-spacing:-0.02em;}
+
 .total-followers-card .tf-sub{font-size:0.68rem;color:var(--text-muted);}
+
 .total-followers-card .change{font-size:0.7rem;margin-top:2px;}
+
 .total-followers-card .change.up{color:var(--success);}
+
 .total-followers-card .change.down{color:var(--danger);}
+
 .total-followers-card .change.flat{color:var(--text-muted);}
+
+
+
 
 
 .tf-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;}
@@ -85,471 +164,947 @@ body{
 
 
 
+
+
+
+
+
+
+
+
 .metric-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;}
+
 .metric-card .label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+
 .metric-card .value{font-size:1.5rem;font-weight:800;margin:3px 0;}
+
 .metric-card .change{font-size:0.7rem;margin-top:2px;}
+
 .metric-card .change.up{color:var(--success);}
+
 .metric-card .change.down{color:var(--danger);}
+
 .metric-card .change.flat{color:var(--text-muted);}
+
 .period-pills{display:flex;gap:6px;margin-bottom:16px;align-items:center;}
+
 .period-pills .label{font-size:0.7rem;color:var(--text-muted);margin-right:6px;}
+
 .period-pill{padding:6px 18px;border-radius:99px;font-size:0.74rem;font-weight:600;cursor:pointer;
+
   border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:all .2s;font-family:inherit;}
+
 .period-pill:hover{border-color:var(--accent);color:var(--text-primary);}
+
 .period-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
 .platform-tabs{display:flex;gap:6px;align-items:center;margin-left:16px;}
+
 .platform-tab{padding:6px 16px;border-radius:99px;font-size:0.74rem;font-weight:600;cursor:pointer;
+
   border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:all .2s;font-family:inherit;}
+
 .platform-tab:hover{border-color:var(--accent);color:var(--text-primary);}
+
 .platform-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
 .period-note{font-size:0.68rem;color:var(--text-muted);margin-left:auto;}
+
 .summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:18px;}
+
 .summary-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 15px;}
+
 .summary-card .label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;}
+
 .summary-card .main-val{font-size:1.25rem;font-weight:800;margin:2px 0;}
+
 .summary-card .sub-val{font-size:0.7rem;color:var(--text-muted);}
+
 .summary-card.followers{border-left:3px solid var(--accent);border-color:#9b59b6;box-shadow:inset 0 0 30px rgba(124,58,237,0.03);}
 
+
+
 .chart-empty-guide{display:flex;align-items:center;justify-content:center;height:260px;
+
   background:var(--bg-card);border:1.5px dashed var(--border);border-radius:var(--radius);margin-bottom:18px;
+
   color:var(--text-muted);font-size:0.78rem;text-align:center;padding:20px;}
+
 .chart-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
+
 .chart-box h4{font-size:0.8rem;color:#4a4a6a;margin-bottom:10px;}
+
 .chart-wrap{position:relative;height:300px;}
+
 .chart-wrap.small{height:240px;}
+
 .chart-wrap canvas{width:100%!important;}
+
 .form-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+
 @media(max-width:900px){.form-grid{grid-template-columns:repeat(4,1fr);}}
+
 @media(max-width:600px){.form-grid{grid-template-columns:1fr 1fr;}}
+
 .form-group{display:flex;flex-direction:column;gap:3px;}
+
 .form-group label{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
+
 .form-group input{
+
   background:var(--bg-input);border:1px solid var(--border);border-radius:7px;padding:8px 10px;
+
   color:var(--text-primary);font-size:0.81rem;font-family:'SF Mono','Cascadia Code',Consolas,monospace;
+
 }
+
 .form-group input:focus{outline:none;border-color:var(--accent);}
+
 .btn-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+
 .table-wrap{overflow-x:auto;max-height:420px;overflow-y:auto;}
+
 .data-table{width:100%;border-collapse:collapse;font-size:0.76rem;}
+
 .data-table th{background:#f3eeff;padding:9px 10px;text-align:left;font-weight:700;color:#5b21b6;border-bottom:2px solid #d8c9ff;position:sticky;top:0;z-index:1;white-space:nowrap;}
+
 .data-table td{padding:7px 10px;border-bottom:1px solid #f0f0f5;white-space:nowrap;}
+
 .data-table tr:hover td{background:rgba(124,58,237,0.04);}
+
 .data-table .num{text-align:right;font-variant-numeric:tabular-nums;}
+
 .empty-state{text-align:center;padding:48px 16px;color:var(--text-muted);}
+
 .empty-state .empty-icon{font-size:2.5rem;opacity:.3;margin-bottom:10px;}
+
 .empty-state p{font-size:0.82rem;}
+
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+
 .modal-overlay.show{display:flex;}
+
 .modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;width:92%;max-width:620px;box-shadow:var(--shadow);}
+
 .modal h3{margin-bottom:12px;}
+
 .modal textarea{width:100%;min-height:180px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text-primary);font-family:'SF Mono','Cascadia Code',Consolas,monospace;font-size:0.78rem;resize:vertical;}
+
 .modal .hint{font-size:0.7rem;color:var(--text-muted);margin:6px 0 12px;}
+
 .modal .hint code{background:#f3f4f6;padding:2px 5px;border-radius:4px;}
+
 .hint{margin-top:6px;font-size:0.7rem;color:var(--text-muted);}
+
 .hint code{background:#f3f4f6;padding:2px 5px;border-radius:4px;}
+
 ::-webkit-scrollbar{width:5px;height:5px;}
+
 ::-webkit-scrollbar-track{background:transparent;}
+
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+
 .posts-section{margin-bottom:18px;}
+
 .posts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+
 .posts-header h3{font-size:0.9rem;font-weight:700;}
+
 .posts-header select{background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text-primary);font-size:0.74rem;cursor:pointer;font-family:inherit;}
+
 .posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;}
+
 @media(max-width:760px){.posts-grid{grid-template-columns:1fr;}}
+
 .post-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+
 .post-card .pc-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+
 .post-card .pc-header .username{font-weight:700;font-size:0.82rem;}
+
 .post-card .pc-header .type-badge{font-size:0.63rem;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--text-muted);white-space:nowrap;text-transform:uppercase;letter-spacing:0.02em;}
+
 .post-card .pc-metrics{display:flex;flex-wrap:wrap;gap:6px 14px;}
+
 .post-card .pc-metric{display:flex;flex-direction:column;min-width:50px;}
+
 .post-card .pc-metric .label{font-size:0.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;}
+
 .post-card .pc-metric .value{font-size:1.1rem;font-weight:800;color:var(--text-primary);}
+
 .post-card .pc-metric.total{min-width:60px;}
+
 .post-card .pc-metric.total .value{color:var(--accent);}
+
 .post-card .pc-footer{display:flex;flex-direction:column;gap:4px;}
+
 .post-card .pc-desc{font-size:0.71rem;color:var(--text-secondary);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
 .post-card .pc-link{font-size:0.68rem;}
+
 .post-card .pc-link a{color:var(--accent);text-decoration:none;}
+
 .post-card .pc-link a:hover{text-decoration:underline;}
+
 .posts-empty{text-align:center;padding:32px 16px;color:var(--text-muted);font-size:0.78rem;}
+
 .ai-section{margin-top:18px;}
+
 .ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
 @media(max-width:760px){.ai-grid{grid-template-columns:1fr;}}
+
 .ai-insights{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;}
+
 .ai-insight-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;}
+
 .ai-insight-card .ai-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+
 .ai-insight-card .ai-value{font-size:1.05rem;font-weight:800;color:var(--text-primary);}
+
 .ai-insight-card .ai-sub{font-size:0.66rem;color:var(--text-muted);margin-top:2px;}
+
 .ai-insight-card .ai-trend.up{color:var(--success);}
+
 .ai-insight-card .ai-trend.down{color:var(--danger);}
+
 .ai-suggestions{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;}
+
 .ai-suggestions .ai-title{font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.03em;}
+
 .ai-suggestion-item{display:flex;gap:8px;margin-bottom:8px;font-size:0.72rem;color:var(--text-secondary);line-height:1.5;align-items:flex-start;}
+
 .ai-suggestion-item:last-child{margin-bottom:0;}
+
 .ai-bullet{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:#9b59b6;margin-top:5px;}
+
 .ai-empty{text-align:center;padding:24px;color:var(--text-muted);font-size:0.74rem;grid-column:1/-1;}
+
 .ai-na{color:var(--text-muted);font-style:italic;}
+
 </style>
+
 </head>
+
 <body>
 
+
+
 <div class="header">
+
   <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
-    <div><h1 id="pageTitle">ins鏁版嵁鎬昏</h1><span class="sub" id="pageSub">姣忔棩蹇収 路 瓒嬪娍杩借釜 路 鏁版嵁椹卞姩</span></div>
+
+    <div><h1 id="pageTitle">ins数据总览</h1><span class="sub" id="pageSub">姣忔棩蹇収 路 瓒嬪娍杩借釜 路 鏁版嵁椹卞姩</span></div>
+
     <div class="platform-tabs" id="platformTabs">
+
       <button class="platform-tab active" data-platform="ins" onclick="switchPlatform('ins')">Ins</button>
-      <button class="platform-tab" data-platform="xhs" onclick="switchPlatform('xhs')">灏忕孩涔?/button>
+
+      <button class="platform-tab" data-platform="xhs" onclick="switchPlatform('xhs')">小红书</button>
+
     </div>
+
   </div>
+
   <div>
-    <button class="btn btn-secondary btn-sm" onclick="exportData()">瀵煎嚭 JSON</button>
-    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">瀵煎叆 JSON</button>
+
+    <button class="btn btn-secondary btn-sm" onclick="exportData()">导出 JSON</button>
+
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">导入 JSON</button>
+
     <button class="btn btn-danger btn-sm" onclick="clearAllData()">娓呯┖鍏ㄩ儴</button>
+
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)">
+
   </div>
+
 </div>
+
+
 
 <div class="main">
+
   
+
   <!-- Overview Cards -->
+
   <div class="metrics-row" id="overviewCards"></div>
 
+
+
   <!-- Period Toggle + Summary -->
+
   <div class="period-pills">
+
     <span class="label">Period:</span>
+
     <button class="period-pill" data-days="7" onclick="setPeriod(7)">7 Days</button>
+
     <button class="period-pill active" data-days="30" onclick="setPeriod(30)">30 Days</button>
+
     <button class="period-pill" data-days="90" onclick="setPeriod(90)">90 Days</button>
+
     <span class="period-note" id="periodNote"></span>
+
   </div>
+
   <div class="summary-row" id="summaryCards"></div>
 
+
+
   <!-- Main Trend Chart -->
+
   <div class="chart-box" id="chartBox1">
-    <h4 id="chartMainTitle">瑙傜湅閲?/ 瑙﹁揪 / 浜掑姩瓒嬪娍 + 鏂板绮変笣</h4>
+
+    <h4 id="chartMainTitle">观看量 / 触达 / 互动趋势 + 新增粉丝</h4>
+
     <div class="chart-wrap" id="chartWrap1"><canvas id="chartMain"></canvas></div>
+
     <div class="chart-empty-guide" id="chartGuide1" style="display:none;"></div>
+
   </div>
+
+
 
   <!-- Profile Visits Trend Chart -->
+
   <div class="chart-box" id="chartBox2">
-    <h4 id="chartAuxTitle">涓婚〉璁块棶瓒嬪娍</h4>
+
+    <h4 id="chartAuxTitle">主页访问趋势</h4>
+
     <div class="chart-wrap" id="chartWrap2" style="height:240px;"><canvas id="chartAux2"></canvas></div>
+
     <div class="chart-empty-guide" id="chartGuide2" style="display:none;"></div>
+
   </div>
+
+
 
   <!-- Data Entry -->
+
   <div class="card" style="margin-bottom:18px;">
+
     <div class="card-header"><h3 id="entryTitle">娣诲姞姣忔棩蹇収</h3></div>
+
     <div class="form-grid">
-      <div class="form-group"><label>鏃ユ湡</label><input type="date" id="dsDate"></div>
-      <div class="form-group"><label id="lblViews">瑙傜湅閲?/label><input type="number" id="dsViews" placeholder="0"></div>
-      <div class="form-group"><label id="lblReach">瑙﹁揪</label><input type="number" id="dsReach" placeholder="0"></div>
-      <div class="form-group"><label id="lblInteractions">鍐呭浜掑姩</label><input type="number" id="dsInteractions" placeholder="0"></div>
-      <div class="form-group"><label>閾炬帴鐐瑰嚮</label><input type="number" id="dsLinkClicks" placeholder="0"></div>
-      <div class="form-group"><label id="lblProfileVisits">涓婚〉璁块棶</label><input type="number" id="dsProfileVisits" placeholder="0"></div>
-      <div class="form-group"><label>鏂板绮変笣</label><input type="number" id="dsFollows" placeholder="0"></div>
-      <div class="form-group"><label>绮変笣鎬绘暟</label><input type="number" id="dsTotalFollowers" placeholder="鐣欑┖"></div>
+
+      <div class="form-group"><label>日期</label><input type="date" id="dsDate"></div>
+
+      <div class="form-group"><label id="lblViews">观看量?/label><input type="number" id="dsViews" placeholder="0"></div>
+
+      <div class="form-group"><label id="lblReach">触达</label><input type="number" id="dsReach" placeholder="0"></div>
+
+      <div class="form-group"><label id="lblInteractions">内容互动</label><input type="number" id="dsInteractions" placeholder="0"></div>
+
+      <div class="form-group"><label>链接点击</label><input type="number" id="dsLinkClicks" placeholder="0"></div>
+
+      <div class="form-group"><label id="lblProfileVisits">主页访问</label><input type="number" id="dsProfileVisits" placeholder="0"></div>
+
+      <div class="form-group"><label>新增粉丝</label><input type="number" id="dsFollows" placeholder="0"></div>
+
+      <div class="form-group"><label>粉丝总数</label><input type="number" id="dsTotalFollowers" placeholder="鐣欑┖"></div>
+
     </div>
+
     <div class="btn-row">
+
       <button class="btn btn-primary" onclick="addDailySnapshot()">娣诲姞蹇収</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('csvModal').classList.add('show')">鎵归噺瀵煎叆 CSV</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteLast()">鍒犻櫎鏈€鍚庝竴鏉?/button>
+
+      <button class="btn btn-secondary" onclick="document.getElementById('csvModal').classList.add('show')">批量导入 CSV</button>
+
+      <button class="btn btn-danger btn-sm" onclick="deleteLast()">删除最后一条</button>
+
     </div>
-    <div class="hint">CSV 鏍煎紡: <code>鏃ユ湡,瑙傜湅閲?瑙﹁揪,鍐呭浜掑姩,閾炬帴鐐瑰嚮,涓婚〉璁块棶,鏂板绮変笣,绮変笣鎬绘暟</code></div>
+
+    <div class="hint">CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code></div>
+
   </div>
+
+
 
   <!-- Data Table -->
+
   <div class="card">
-    <div class="card-header"><h3 id="tableTitle">姣忔棩璁板綍</h3><span class="sub" id="recordCount"></span></div>
+
+    <div class="card-header"><h3 id="tableTitle">每日记录</h3><span class="sub" id="recordCount"></span></div>
+
     <div class="table-wrap" id="dsDataTable"></div>
+
   </div>
+
+
 
   <!-- Top Posts -->
+
   <div class="posts-section" style="margin-top:18px;">
+
     <div class="posts-header">
+
       <h3 id="postsTitle">鐑棬甯栧瓙</h3>
+
       <select onchange="setPostSort(this.value)">
-        <option value="interactions">鎺掑簭鏂瑰紡: 浜掑姩閲?/option>
-        <option value="views">鎺掑簭鏂瑰紡: 瑙傜湅閲?/option>
-        <option value="reach">鎺掑簭鏂瑰紡: 瑙﹁揪</option>
+
+        <option value="interactions">排序方式: 互动量</option>
+
+        <option value="views">排序方式: 观看量</option>
+
+        <option value="reach">排序方式: 触达</option>
+
       </select>
+
     </div>
+
     <div class="posts-grid" id="postsGrid"></div>
+
   </div>
+
+
 
   <!-- AI Analysis -->
+
   <div class="ai-section" id="aiSection">
-    <div class="card-header"><h3>AI 鏁版嵁鍒嗘瀽涓庡缓璁?/h3><span class="sub" id="aiPeriodLabel"></span></div>
+
+    <div class="card-header"><h3>AI 数据分析与建议</h3><span class="sub" id="aiPeriodLabel"></span></div>
+
     <div class="ai-grid" id="aiGrid"></div>
+
   </div>
 
+
+
 </div>
+
+
 
 <!-- CSV Import Modal -->
+
 <div class="modal-overlay" id="csvModal">
+
   <div class="modal">
+
     <h3>鎵归噺瀵煎叆姣忔棩蹇収 CSV</h3>
-    <div class="hint">CSV 鏍煎紡: <code>鏃ユ湡,瑙傜湅閲?瑙﹁揪,鍐呭浜掑姩,閾炬帴鐐瑰嚮,涓婚〉璁块棶,鏂板绮変笣,绮変笣鎬绘暟</code><br>姣忓ぉ涓€琛屻€傛棩鏈熸牸寮? YYYY-MM-DD銆傞噸澶嶆棩鏈熷皢琚鐩栥€?/div>
+
+    <div class="hint">CSV 格式: <code>日期,观看量,触达,内容互动,链接点击,主页访问,新增粉丝,粉丝总数</code><br>姣忓ぉ涓€琛屻€傛棩鏈熸牸寮? YYYY-MM-DD銆傞噸澶嶆棩鏈熷皢琚鐩栥€?/div>
+
     <textarea id="csvText" placeholder="2026-06-17,6187,262,156,0,35,0,8655&#10;2026-06-16,5800,240,142,2,30,1,8650"></textarea>
+
     <div class="btn-row" style="margin-top:12px;">
-      <button class="btn btn-primary" onclick="importCSV()">瀵煎叆</button>
-      <button class="btn btn-secondary" onclick="closeCSVModal()">鍙栨秷</button>
+
+      <button class="btn btn-primary" onclick="importCSV()">导入</button>
+
+      <button class="btn btn-secondary" onclick="closeCSVModal()">取消</button>
+
     </div>
+
   </div>
+
 </div>
+
+
 
 <script>function init() {
 
+
+
 var STORAGE_KEY = 'fb_insights_daily_v1';
+
 var POSTS_KEY = 'fb_posts_data';
+
 var XHS_STORAGE_KEY = 'xhs_daily_data';
+
 var XHS_POSTS_KEY = 'xhs_posts_data';
+
 var data = [
+
       { date: "2026-03-27", views: 549, reach: 31, interactions: 0, linkClicks: 0, profileVisits: 58, follows: 4, total_followers: 8321 },
+
       { date: "2026-03-28", views: 188, reach: 11, interactions: 0, linkClicks: 0, profileVisits: 14, follows: 2, total_followers: 8323 },
+
       { date: "2026-03-29", views: 243, reach: 19, interactions: 3, linkClicks: 0, profileVisits: 33, follows: 3, total_followers: 8326 },
+
       { date: "2026-03-30", views: 291, reach: 23, interactions: 0, linkClicks: 0, profileVisits: 42, follows: 3, total_followers: 8329 },
+
       { date: "2026-03-31", views: 283, reach: 14, interactions: 0, linkClicks: 0, profileVisits: 27, follows: 0, total_followers: 8329 },
+
       { date: "2026-04-01", views: 1758, reach: 81, interactions: 93, linkClicks: 0, profileVisits: 26, follows: 2, total_followers: 8331 },
+
       { date: "2026-04-02", views: 325, reach: 10, interactions: 7, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8335 },
+
       { date: "2026-04-03", views: 410, reach: 97, interactions: 7, linkClicks: 0, profileVisits: 15, follows: 2, total_followers: 8337 },
+
       { date: "2026-04-04", views: 212, reach: 52, interactions: 2, linkClicks: 0, profileVisits: 19, follows: 0, total_followers: 8337 },
+
       { date: "2026-04-05", views: 304, reach: 104, interactions: 5, linkClicks: 0, profileVisits: 32, follows: 5, total_followers: 8342 },
+
       { date: "2026-04-06", views: 372, reach: 38, interactions: 8, linkClicks: 0, profileVisits: 15, follows: 3, total_followers: 8345 },
+
       { date: "2026-04-07", views: 859, reach: 111, interactions: 16, linkClicks: 0, profileVisits: 12, follows: 3, total_followers: 8348 },
+
       { date: "2026-04-08", views: 820, reach: 473, interactions: 9, linkClicks: 0, profileVisits: 11, follows: 0, total_followers: 8348 },
+
       { date: "2026-04-09", views: 582, reach: 80, interactions: 6, linkClicks: 0, profileVisits: 50, follows: 3, total_followers: 8351 },
+
       { date: "2026-04-10", views: 83, reach: 6, interactions: 5, linkClicks: 0, profileVisits: 8, follows: 0, total_followers: 8351 },
+
       { date: "2026-04-11", views: 172, reach: 44, interactions: 4, linkClicks: 0, profileVisits: 4, follows: 3, total_followers: 8354 },
+
       { date: "2026-04-12", views: 2295, reach: 54, interactions: 132, linkClicks: 0, profileVisits: 36, follows: 2, total_followers: 8356 },
+
       { date: "2026-04-13", views: 15919, reach: 43, interactions: 1138, linkClicks: 0, profileVisits: 58, follows: 5, total_followers: 8361 },
+
       { date: "2026-04-14", views: 5601, reach: 6, interactions: 414, linkClicks: 0, profileVisits: 17, follows: 1, total_followers: 8362 },
+
       { date: "2026-04-15", views: 1785, reach: 6, interactions: 122, linkClicks: 0, profileVisits: 18, follows: 2, total_followers: 8364 },
+
       { date: "2026-04-16", views: 1296, reach: 17, interactions: 69, linkClicks: 0, profileVisits: 33, follows: 2, total_followers: 8366 },
+
       { date: "2026-04-17", views: 1772, reach: 101, interactions: 89, linkClicks: 0, profileVisits: 42, follows: 6, total_followers: 8372 },
+
       { date: "2026-04-18", views: 107484, reach: 42, interactions: 122, linkClicks: 0, profileVisits: 18, follows: 0, total_followers: 8372 },
+
       { date: "2026-04-19", views: 2091, reach: 38, interactions: 123, linkClicks: 0, profileVisits: 18, follows: 3, total_followers: 8375 },
+
       { date: "2026-04-20", views: 4573, reach: 137, interactions: 323, linkClicks: 0, profileVisits: 23, follows: 6, total_followers: 8381 },
+
       { date: "2026-04-21", views: 3354, reach: 154, interactions: 191, linkClicks: 0, profileVisits: 17, follows: 3, total_followers: 8384 },
+
       { date: "2026-04-22", views: 2337, reach: 31, interactions: 152, linkClicks: 0, profileVisits: 47, follows: 2, total_followers: 8386 },
+
       { date: "2026-04-23", views: 2333, reach: 46, interactions: 147, linkClicks: 0, profileVisits: 53, follows: 2, total_followers: 8388 },
+
       { date: "2026-04-24", views: 1486, reach: 48, interactions: 103, linkClicks: 0, profileVisits: 7, follows: 7, total_followers: 8395 },
+
       { date: "2026-04-25", views: 1853, reach: 17, interactions: 128, linkClicks: 0, profileVisits: 27, follows: 4, total_followers: 8399 },
+
       { date: "2026-04-26", views: 4033, reach: 20, interactions: 259, linkClicks: 0, profileVisits: 41, follows: 6, total_followers: 8405 },
+
       { date: "2026-04-27", views: 3625, reach: 12, interactions: 267, linkClicks: 0, profileVisits: 22, follows: 2, total_followers: 8407 },
+
       { date: "2026-04-28", views: 2288, reach: 43, interactions: 167, linkClicks: 0, profileVisits: 19, follows: 2, total_followers: 8409 },
+
       { date: "2026-04-29", views: 2348, reach: 91, interactions: 104, linkClicks: 0, profileVisits: 132, follows: 6, total_followers: 8415 },
+
       { date: "2026-04-30", views: 1845, reach: 25, interactions: 159, linkClicks: 0, profileVisits: 50, follows: 3, total_followers: 8418 },
+
       { date: "2026-05-01", views: 2050, reach: 11, interactions: 122, linkClicks: 0, profileVisits: 21, follows: 0, total_followers: 8418 },
+
       { date: "2026-05-02", views: 1639, reach: 11, interactions: 108, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8422 },
+
       { date: "2026-05-03", views: 1447, reach: 9, interactions: 68, linkClicks: 0, profileVisits: 26, follows: 7, total_followers: 8429 },
+
       { date: "2026-05-04", views: 920, reach: 7, interactions: 69, linkClicks: 0, profileVisits: 17, follows: 8, total_followers: 8437 },
+
       { date: "2026-05-05", views: 586, reach: 3, interactions: 35, linkClicks: 0, profileVisits: 7, follows: 2, total_followers: 8439 },
+
       { date: "2026-05-06", views: 680, reach: 3, interactions: 37, linkClicks: 0, profileVisits: 5, follows: 3, total_followers: 8442 },
+
       { date: "2026-05-07", views: 623, reach: 4, interactions: 38, linkClicks: 0, profileVisits: 14, follows: 6, total_followers: 8448 },
+
       { date: "2026-05-08", views: 657, reach: 10, interactions: 24, linkClicks: 0, profileVisits: 33, follows: 6, total_followers: 8454 },
+
       { date: "2026-05-09", views: 644, reach: 5, interactions: 39, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8458 },
+
       { date: "2026-05-10", views: 1317, reach: 46, interactions: 50, linkClicks: 0, profileVisits: 20, follows: 3, total_followers: 8461 },
+
       { date: "2026-05-11", views: 2263, reach: 230, interactions: 89, linkClicks: 0, profileVisits: 35, follows: 3, total_followers: 8464 },
+
       { date: "2026-05-12", views: 2357, reach: 59, interactions: 132, linkClicks: 0, profileVisits: 44, follows: 7, total_followers: 8471 },
+
       { date: "2026-05-13", views: 5312, reach: 98, interactions: 206, linkClicks: 0, profileVisits: 322, follows: 15, total_followers: 8486 },
+
       { date: "2026-05-14", views: 3962, reach: 16, interactions: 130, linkClicks: 0, profileVisits: 51, follows: 6, total_followers: 8492 },
+
       { date: "2026-05-15", views: 5768, reach: 51, interactions: 242, linkClicks: 0, profileVisits: 40, follows: 6, total_followers: 8498 },
+
       { date: "2026-05-16", views: 3038, reach: 6, interactions: 147, linkClicks: 0, profileVisits: 35, follows: 5, total_followers: 8503 },
+
       { date: "2026-05-17", views: 5091, reach: 37, interactions: 229, linkClicks: 0, profileVisits: 30, follows: 10, total_followers: 8513 },
+
       { date: "2026-05-18", views: 3031, reach: 48, interactions: 119, linkClicks: 0, profileVisits: 24, follows: 2, total_followers: 8515 },
+
       { date: "2026-05-19", views: 2316, reach: 15, interactions: 79, linkClicks: 0, profileVisits: 20, follows: 4, total_followers: 8519 },
+
       { date: "2026-05-20", views: 2751, reach: 48, interactions: 109, linkClicks: 0, profileVisits: 11, follows: 5, total_followers: 8524 },
+
       { date: "2026-05-21", views: 3132, reach: 29, interactions: 143, linkClicks: 0, profileVisits: 173, follows: 13, total_followers: 8537 },
+
       { date: "2026-05-22", views: 2449, reach: 150, interactions: 98, linkClicks: 0, profileVisits: 140, follows: 14, total_followers: 8551 },
+
       { date: "2026-05-23", views: 1658, reach: 26, interactions: 72, linkClicks: 0, profileVisits: 9, follows: 5, total_followers: 8556 },
+
       { date: "2026-05-24", views: 2182, reach: 134, interactions: 86, linkClicks: 0, profileVisits: 25, follows: 7, total_followers: 8563 },
+
       { date: "2026-05-25", views: 3514, reach: 286, interactions: 141, linkClicks: 0, profileVisits: 51, follows: 6, total_followers: 8569 },
+
       { date: "2026-05-26", views: 2458, reach: 182, interactions: 81, linkClicks: 0, profileVisits: 37, follows: 8, total_followers: 8577 },
+
       { date: "2026-05-27", views: 2190, reach: 88, interactions: 75, linkClicks: 0, profileVisits: 36, follows: 5, total_followers: 8582 },
+
       { date: "2026-05-28", views: 1463, reach: 82, interactions: 61, linkClicks: 0, profileVisits: 34, follows: 6, total_followers: 8588 },
+
       { date: "2026-05-29", views: 1662, reach: 446, interactions: 52, linkClicks: 0, profileVisits: 104, follows: 5, total_followers: 8593 },
+
       { date: "2026-05-30", views: 1341, reach: 88, interactions: 65, linkClicks: 0, profileVisits: 13, follows: 1, total_followers: 8594 },
+
       { date: "2026-05-31", views: 1307, reach: 29, interactions: 61, linkClicks: 0, profileVisits: 24, follows: 1, total_followers: 8595 },
+
       { date: "2026-06-01", views: 878, reach: 23, interactions: 34, linkClicks: 0, profileVisits: 27, follows: 5, total_followers: 8600 },
+
       { date: "2026-06-02", views: 2019, reach: 225, interactions: 100, linkClicks: 0, profileVisits: 85, follows: 5, total_followers: 8605 },
+
       { date: "2026-06-03", views: 6438, reach: 61, interactions: 293, linkClicks: 0, profileVisits: 71, follows: 6, total_followers: 8611 },
+
       { date: "2026-06-04", views: 2993, reach: 214, interactions: 169, linkClicks: 0, profileVisits: 61, follows: 11, total_followers: 8622 },
+
       { date: "2026-06-05", views: 2833, reach: 244, interactions: 126, linkClicks: 0, profileVisits: 39, follows: 9, total_followers: 8631 },
+
       { date: "2026-06-06", views: 1931, reach: 238, interactions: 116, linkClicks: 0, profileVisits: 26, follows: 5, total_followers: 8636 },
+
       { date: "2026-06-07", views: 1823, reach: 84, interactions: 123, linkClicks: 0, profileVisits: 24, follows: 6, total_followers: 8642 },
+
       { date: "2026-06-08", views: 2393, reach: 115, interactions: 121, linkClicks: 0, profileVisits: 55, follows: 10, total_followers: 8652 },
+
       { date: "2026-06-09", views: 2928, reach: 136, interactions: 155, linkClicks: 0, profileVisits: 57, follows: 8, total_followers: 8660 },
+
       { date: "2026-06-10", views: 1781, reach: 116, interactions: 64, linkClicks: 0, profileVisits: 44, follows: 6, total_followers: 8666 },
+
       { date: "2026-06-11", views: 1687, reach: 130, interactions: 55, linkClicks: 0, profileVisits: 194, follows: 4, total_followers: 8670 },
+
       { date: "2026-06-12", views: 1274, reach: 169, interactions: 56, linkClicks: 0, profileVisits: 43, follows: 5, total_followers: 8675 },
+
       { date: "2026-06-13", views: 1245, reach: 219, interactions: 55, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8679 },
+
       { date: "2026-06-14", views: 1659, reach: 82, interactions: 85, linkClicks: 0, profileVisits: 46, follows: 4, total_followers: 8683 },
+
       { date: "2026-06-15", views: 3762, reach: 65, interactions: 171, linkClicks: 0, profileVisits: 73, follows: 0, total_followers: 8683 },
+
       { date: "2026-06-16", views: 6205, reach: 262, interactions: 156, linkClicks: 0, profileVisits: 35, follows: 0, total_followers: 8683 },
+
       { date: "2026-06-17", views: 2301, reach: 71, interactions: 79, linkClicks: 0, profileVisits: 20, follows: 1, total_followers: 8684 },
+
       { date: "2026-06-18", views: 2096, reach: 31, interactions: 94, linkClicks: 0, profileVisits: 22, follows: 1, total_followers: 8685 },
+
       { date: "2026-06-19", views: 1600, reach: 27, interactions: 70, linkClicks: 0, profileVisits: 17, follows: 1, total_followers: 8686 },
+
       { date: "2026-06-20", views: 4332, reach: 29, interactions: 243, linkClicks: 0, profileVisits: 21, follows: 1, total_followers: 8687 },
+
       { date: "2026-06-21", views: 4895, reach: 53, interactions: 191, linkClicks: 0, profileVisits: 21, follows: 4, total_followers: 8691 },
+
       { date: "2026-06-22", views: 7566, reach: 80, interactions: 261, linkClicks: 0, profileVisits: 68, follows: 8, total_followers: 8692 },
+
       { date: "2026-06-23", views: 5284, reach: 16, interactions: 224, linkClicks: 0, profileVisits: 43, follows: 9, total_followers: 8693 },
+
       { date: "2026-06-24", views: 8733, reach: 102, interactions: 394, linkClicks: 0, profileVisits: 49, follows: 16, total_followers: 8693 },
+
       { date: "2026-06-25", views: 2387, reach: 22, interactions: 122, linkClicks: 0, profileVisits: 35, follows: 0, total_followers: 8693 },
+
       { date: "2026-06-26", views: 6665, reach: 16, interactions: 316, linkClicks: 0, profileVisits: 63, follows: 0, total_followers: 8694 },
+
       { date: "2026-06-27", views: 3631, reach: 14, interactions: 205, linkClicks: 0, profileVisits: 29, follows: 0, total_followers: 8694 },
+
       { date: "2026-06-28", views: null, reach: null, interactions: null, linkClicks: 0, profileVisits: null, follows: 0, total_followers: 8694 }
+
     ];
+
   // --- Merge localStorage with preload data (preload wins for same date) ---
+
   var savedData = localStorage.getItem(STORAGE_KEY);
+
   if (savedData) {
+
     try {
+
       var parsed = JSON.parse(savedData);
+
       var preloadDates = {};
+
       for (var pi = 0; pi < data.length; pi++) {
+
         preloadDates[data[pi].date] = true;
+
       }
+
       var merged = [];
+
       for (var li = 0; li < parsed.length; li++) {
+
         if (!preloadDates[parsed[li].date]) {
+
           merged.push(parsed[li]);
+
         }
+
       }
+
       // Append localStorage-only entries, then sort
+
       data = data.concat(merged);
+
       data.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
     } catch (e) { console.warn('merge localStorage failed:', e); }
-  }
-  renderAll();
-  var today = new Date();
-  document.getElementById('dsDate').value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-  // Initialize Ins data as primary
-  insData = data.slice();
-  // Preload XHS 30-day real data (from xiaohongshu_30days_all_metrics.xlsx)
-  xhsData = [
-      { date: "2026-03-27", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-03-28", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-03-29", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-03-30", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-03-31", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-01", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-02", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-03", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-04", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-05", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-06", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-07", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-08", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-09", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-10", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-11", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-12", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-13", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-14", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-15", views: 62, reach: 1128, interactions: 2, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-16", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-17", views: 174, reach: 1695, interactions: 7, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-18", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-19", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-20", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
-      { date: "2026-04-21", views: 389, reach: 3630, interactions: 53, linkClicks: 0, profileVisits: 0, follows: 3, total_followers: 441 },
-      { date: "2026-04-22", views: 164, reach: 1848, interactions: 22, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 441 },
-      { date: "2026-04-23", views: 3471, reach: 24919, interactions: 521, linkClicks: 0, profileVisits: 0, follows: 94, total_followers: 535 },
-      { date: "2026-04-24", views: 828, reach: 5973, interactions: 93, linkClicks: 0, profileVisits: 0, follows: 16, total_followers: 551 },
-      { date: "2026-04-25", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-04-26", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-04-27", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-04-28", views: 913, reach: 5205, interactions: 62, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-04-29", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-04-30", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-01", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-02", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-03", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-04", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-05", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-06", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-07", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-08", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-09", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
-      { date: "2026-05-10", views: 1413, reach: 3340, interactions: 78, linkClicks: 0, profileVisits: 0, follows: 5, total_followers: 556 },
-      { date: "2026-05-11", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 556 },
-      { date: "2026-05-12", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 556 },
-      { date: "2026-05-13", views: 501, reach: 3047, interactions: 11, linkClicks: 0, profileVisits: 0, follows: 2, total_followers: 558 },
-      { date: "2026-05-14", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
-      { date: "2026-05-15", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
-      { date: "2026-05-16", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
-      { date: "2026-05-17", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
-      { date: "2026-05-18", views: 92, reach: 798, interactions: 7, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
-      { date: "2026-05-19", views: 132, reach: 878, interactions: 8, linkClicks: 0, profileVisits: 15, follows: 0, total_followers: 558 },
-      { date: "2026-05-20", views: 37, reach: 386, interactions: 6, linkClicks: 0, profileVisits: 13, follows: 1, total_followers: 558 },
-      { date: "2026-05-21", views: 20, reach: 244, interactions: 0, linkClicks: 0, profileVisits: 6, follows: 0, total_followers: 558 },
-      { date: "2026-05-22", views: 35, reach: 491, interactions: 7, linkClicks: 0, profileVisits: 10, follows: 0, total_followers: 558 },
-      { date: "2026-05-23", views: 16, reach: 146, interactions: 4, linkClicks: 0, profileVisits: 2, follows: 0, total_followers: 558 },
-      { date: "2026-05-24", views: 13, reach: 103, interactions: 0, linkClicks: 0, profileVisits: 3, follows: 0, total_followers: 558 },
-      { date: "2026-05-25", views: 17, reach: 226, interactions: 0, linkClicks: 0, profileVisits: 10, follows: -1, total_followers: 557 },
-      { date: "2026-05-26", views: 57, reach: 491, interactions: 4, linkClicks: 0, profileVisits: 12, follows: -1, total_followers: 556 },
-      { date: "2026-05-27", views: 31, reach: 301, interactions: 0, linkClicks: 0, profileVisits: 5, follows: 1, total_followers: 557 },
-      { date: "2026-05-28", views: 105, reach: 805, interactions: 5, linkClicks: 0, profileVisits: 14, follows: -2, total_followers: 555 },
-      { date: "2026-05-29", views: 106, reach: 896, interactions: 4, linkClicks: 0, profileVisits: 15, follows: -1, total_followers: 554 },
-      {date: "2026-05-30", views: 31, reach: 264, interactions: 2, linkClicks: 0, profileVisits: 9, follows: -1, total_followers: 553 },
-      { date: "2026-05-31", views: 8, reach: 129, interactions: 1, linkClicks: 0, profileVisits: 4, follows: -1, total_followers: 552 },
-      { date: "2026-06-01", views: 16, reach: 181, interactions: 1, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 551 },
-      { date: "2026-06-02", views: 50, reach: 617, interactions: 5, linkClicks: 0, profileVisits: 13, follows: 0, total_followers: 551 },
-      { date: "2026-06-03", views: 26, reach: 361, interactions: 1, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 551 },
-      { date: "2026-06-04", views: 152, reach: 1028, interactions: 12, linkClicks: 0, profileVisits: 11, follows: 1, total_followers: 552 },
-      { date: "2026-06-05", views: 102, reach: 675, interactions: 2, linkClicks: 0, profileVisits: 7, follows: 0, total_followers: 552 },
-      { date: "2026-06-06", views: 16, reach: 168, interactions: 0, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 552 },
-      { date: "2026-06-07", views: 9, reach: 68, interactions: 3, linkClicks: 0, profileVisits: 1, follows: -2, total_followers: 550 },
-      { date: "2026-06-08", views: 8, reach: 121, interactions: 1, linkClicks: 0, profileVisits: 4, follows: -1, total_followers: 549 },
-      { date: "2026-06-09", views: 13, reach: 108, interactions: 1, linkClicks: 0, profileVisits: 2, follows: 0, total_followers: 549 },
-      { date: "2026-06-10", views: 9, reach: 103, interactions: 0, linkClicks: 0, profileVisits: 1, follows: 0, total_followers: 549 },
-      { date: "2026-06-11", views: 24, reach: 337, interactions: 4, linkClicks: 0, profileVisits: 7, follows: -3, total_followers: 546 },
-      { date: "2026-06-12", views: 20, reach: 159, interactions: 0, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 546 },
-      { date: "2026-06-13", views: 37, reach: 427, interactions: 4, linkClicks: 0, profileVisits: 6, follows: -2, total_followers: 544 },
-      { date: "2026-06-14", views: 8, reach: 120, interactions: 1, linkClicks: 0, profileVisits: 3, follows: 0, total_followers: 544 },
-      { date: "2026-06-15", views: 37, reach: 412, interactions: 5, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 544 },
-      { date: "2026-06-16", views: 29, reach: 263, interactions: 8, linkClicks: 0, profileVisits: 8, follows: -1, total_followers: 543 },
-      { date: "2026-06-17", views: 10, reach: 118, interactions: 0, linkClicks: 0, profileVisits: 2, follows: 1, total_followers: 544 },
-      { date: "2026-06-18", views: 34, reach: 391, interactions: 1, linkClicks: 0, profileVisits: 7, follows: -1, total_followers: 543 },
-      { date: "2026-06-19", views: 17, reach: 123, interactions: 1, linkClicks: 0, profileVisits: 2, follows: 0, total_followers: 543 },
-      { date: "2026-06-20", views: 5, reach: 60, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 1, total_followers: 544 },
-      { date: "2026-06-21", views: 3, reach: 72, interactions: 1, linkClicks: 0, profileVisits: 2, follows: -1, total_followers: 543 },
-      { date: "2026-06-22", views: 19, reach: 403, interactions: 3, linkClicks: 0, profileVisits: 4, follows: -1, total_followers: 542 },
-      { date: "2026-06-23", views: 13, reach: 210, interactions: 0, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 541 },
-      { date: "2026-06-24", views: 440, reach: 3289, interactions: 169, linkClicks: 0, profileVisits: 43, follows: 44, total_followers: 585 },
-      { date: "2026-06-25", views: 916, reach: 10009, interactions: 187, linkClicks: 0, profileVisits: 52, follows: 54, total_followers: 639 },
-      { date: "2026-06-26", views: 537, reach: 4008, interactions: 44, linkClicks: 0, profileVisits: 30, follows: 8, total_followers: 647 },
-      { date: "2026-06-27", views: 90, reach: 1360, interactions: 20, linkClicks: 0, profileVisits: 10, follows: 3, total_followers: 650 },
-      { date: "2026-06-28", views: 24, reach: 315, interactions: 4, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 649 }
-    ];
-  // --- Merge XHS localStorage with preload data (preload wins for same date) ---
-  var savedXhs = localStorage.getItem(XHS_STORAGE_KEY);
-  if (savedXhs) {
-    try {
-      var parsedXhs = JSON.parse(savedXhs);
-      var preloadXhsDates = {};
-      for (var px = 0; px < xhsData.length; px++) {
-        preloadXhsDates[xhsData[px].date] = true;
-      }
-      var mergedXhs = [];
-      for (var lx = 0; lx < parsedXhs.length; lx++) {
-        if (!preloadXhsDates[parsedXhs[lx].date]) {
-          mergedXhs.push(parsedXhs[lx]);
-        }
-      }
-      xhsData = xhsData.concat(mergedXhs);
-      xhsData.sort(function(a, b) { return b.date.localeCompare(a.date); });
-    } catch (e) { console.warn('merge XHS localStorage failed:', e); }
+
   }
 
+  renderAll();
+
+  var today = new Date();
+
+  document.getElementById('dsDate').value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+  // Initialize Ins data as primary
+
+  insData = data.slice();
+
+  // Preload XHS 30-day real data (from xiaohongshu_30days_all_metrics.xlsx)
+
+  xhsData = [
+
+      { date: "2026-03-27", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-03-28", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-03-29", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-03-30", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-03-31", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-01", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-02", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-03", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-04", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-05", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-06", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-07", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-08", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-09", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-10", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-11", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-12", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-13", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-14", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-15", views: 62, reach: 1128, interactions: 2, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-16", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-17", views: 174, reach: 1695, interactions: 7, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-18", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-19", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-20", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 438 },
+
+      { date: "2026-04-21", views: 389, reach: 3630, interactions: 53, linkClicks: 0, profileVisits: 0, follows: 3, total_followers: 441 },
+
+      { date: "2026-04-22", views: 164, reach: 1848, interactions: 22, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 441 },
+
+      { date: "2026-04-23", views: 3471, reach: 24919, interactions: 521, linkClicks: 0, profileVisits: 0, follows: 94, total_followers: 535 },
+
+      { date: "2026-04-24", views: 828, reach: 5973, interactions: 93, linkClicks: 0, profileVisits: 0, follows: 16, total_followers: 551 },
+
+      { date: "2026-04-25", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-04-26", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-04-27", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-04-28", views: 913, reach: 5205, interactions: 62, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-04-29", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-04-30", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-01", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-02", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-03", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-04", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-05", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-06", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-07", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-08", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-09", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 551 },
+
+      { date: "2026-05-10", views: 1413, reach: 3340, interactions: 78, linkClicks: 0, profileVisits: 0, follows: 5, total_followers: 556 },
+
+      { date: "2026-05-11", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 556 },
+
+      { date: "2026-05-12", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 556 },
+
+      { date: "2026-05-13", views: 501, reach: 3047, interactions: 11, linkClicks: 0, profileVisits: 0, follows: 2, total_followers: 558 },
+
+      { date: "2026-05-14", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-15", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-16", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-17", views: 0, reach: 0, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-18", views: 92, reach: 798, interactions: 7, linkClicks: 0, profileVisits: 0, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-19", views: 132, reach: 878, interactions: 8, linkClicks: 0, profileVisits: 15, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-20", views: 37, reach: 386, interactions: 6, linkClicks: 0, profileVisits: 13, follows: 1, total_followers: 558 },
+
+      { date: "2026-05-21", views: 20, reach: 244, interactions: 0, linkClicks: 0, profileVisits: 6, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-22", views: 35, reach: 491, interactions: 7, linkClicks: 0, profileVisits: 10, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-23", views: 16, reach: 146, interactions: 4, linkClicks: 0, profileVisits: 2, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-24", views: 13, reach: 103, interactions: 0, linkClicks: 0, profileVisits: 3, follows: 0, total_followers: 558 },
+
+      { date: "2026-05-25", views: 17, reach: 226, interactions: 0, linkClicks: 0, profileVisits: 10, follows: -1, total_followers: 557 },
+
+      { date: "2026-05-26", views: 57, reach: 491, interactions: 4, linkClicks: 0, profileVisits: 12, follows: -1, total_followers: 556 },
+
+      { date: "2026-05-27", views: 31, reach: 301, interactions: 0, linkClicks: 0, profileVisits: 5, follows: 1, total_followers: 557 },
+
+      { date: "2026-05-28", views: 105, reach: 805, interactions: 5, linkClicks: 0, profileVisits: 14, follows: -2, total_followers: 555 },
+
+      { date: "2026-05-29", views: 106, reach: 896, interactions: 4, linkClicks: 0, profileVisits: 15, follows: -1, total_followers: 554 },
+
+      {date: "2026-05-30", views: 31, reach: 264, interactions: 2, linkClicks: 0, profileVisits: 9, follows: -1, total_followers: 553 },
+
+      { date: "2026-05-31", views: 8, reach: 129, interactions: 1, linkClicks: 0, profileVisits: 4, follows: -1, total_followers: 552 },
+
+      { date: "2026-06-01", views: 16, reach: 181, interactions: 1, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 551 },
+
+      { date: "2026-06-02", views: 50, reach: 617, interactions: 5, linkClicks: 0, profileVisits: 13, follows: 0, total_followers: 551 },
+
+      { date: "2026-06-03", views: 26, reach: 361, interactions: 1, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 551 },
+
+      { date: "2026-06-04", views: 152, reach: 1028, interactions: 12, linkClicks: 0, profileVisits: 11, follows: 1, total_followers: 552 },
+
+      { date: "2026-06-05", views: 102, reach: 675, interactions: 2, linkClicks: 0, profileVisits: 7, follows: 0, total_followers: 552 },
+
+      { date: "2026-06-06", views: 16, reach: 168, interactions: 0, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 552 },
+
+      { date: "2026-06-07", views: 9, reach: 68, interactions: 3, linkClicks: 0, profileVisits: 1, follows: -2, total_followers: 550 },
+
+      { date: "2026-06-08", views: 8, reach: 121, interactions: 1, linkClicks: 0, profileVisits: 4, follows: -1, total_followers: 549 },
+
+      { date: "2026-06-09", views: 13, reach: 108, interactions: 1, linkClicks: 0, profileVisits: 2, follows: 0, total_followers: 549 },
+
+      { date: "2026-06-10", views: 9, reach: 103, interactions: 0, linkClicks: 0, profileVisits: 1, follows: 0, total_followers: 549 },
+
+      { date: "2026-06-11", views: 24, reach: 337, interactions: 4, linkClicks: 0, profileVisits: 7, follows: -3, total_followers: 546 },
+
+      { date: "2026-06-12", views: 20, reach: 159, interactions: 0, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 546 },
+
+      { date: "2026-06-13", views: 37, reach: 427, interactions: 4, linkClicks: 0, profileVisits: 6, follows: -2, total_followers: 544 },
+
+      { date: "2026-06-14", views: 8, reach: 120, interactions: 1, linkClicks: 0, profileVisits: 3, follows: 0, total_followers: 544 },
+
+      { date: "2026-06-15", views: 37, reach: 412, interactions: 5, linkClicks: 0, profileVisits: 4, follows: 0, total_followers: 544 },
+
+      { date: "2026-06-16", views: 29, reach: 263, interactions: 8, linkClicks: 0, profileVisits: 8, follows: -1, total_followers: 543 },
+
+      { date: "2026-06-17", views: 10, reach: 118, interactions: 0, linkClicks: 0, profileVisits: 2, follows: 1, total_followers: 544 },
+
+      { date: "2026-06-18", views: 34, reach: 391, interactions: 1, linkClicks: 0, profileVisits: 7, follows: -1, total_followers: 543 },
+
+      { date: "2026-06-19", views: 17, reach: 123, interactions: 1, linkClicks: 0, profileVisits: 2, follows: 0, total_followers: 543 },
+
+      { date: "2026-06-20", views: 5, reach: 60, interactions: 0, linkClicks: 0, profileVisits: 0, follows: 1, total_followers: 544 },
+
+      { date: "2026-06-21", views: 3, reach: 72, interactions: 1, linkClicks: 0, profileVisits: 2, follows: -1, total_followers: 543 },
+
+      { date: "2026-06-22", views: 19, reach: 403, interactions: 3, linkClicks: 0, profileVisits: 4, follows: -1, total_followers: 542 },
+
+      { date: "2026-06-23", views: 13, reach: 210, interactions: 0, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 541 },
+
+      { date: "2026-06-24", views: 440, reach: 3289, interactions: 169, linkClicks: 0, profileVisits: 43, follows: 44, total_followers: 585 },
+
+      { date: "2026-06-25", views: 916, reach: 10009, interactions: 187, linkClicks: 0, profileVisits: 52, follows: 54, total_followers: 639 },
+
+      { date: "2026-06-26", views: 537, reach: 4008, interactions: 44, linkClicks: 0, profileVisits: 30, follows: 8, total_followers: 647 },
+
+      { date: "2026-06-27", views: 90, reach: 1360, interactions: 20, linkClicks: 0, profileVisits: 10, follows: 3, total_followers: 650 },
+
+      { date: "2026-06-28", views: 24, reach: 315, interactions: 4, linkClicks: 0, profileVisits: 3, follows: -1, total_followers: 649 }
+
+    ];
+
+  // --- Merge XHS localStorage with preload data (preload wins for same date) ---
+
+  var savedXhs = localStorage.getItem(XHS_STORAGE_KEY);
+
+  if (savedXhs) {
+
+    try {
+
+      var parsedXhs = JSON.parse(savedXhs);
+
+      var preloadXhsDates = {};
+
+      for (var px = 0; px < xhsData.length; px++) {
+
+        preloadXhsDates[xhsData[px].date] = true;
+
+      }
+
+      var mergedXhs = [];
+
+      for (var lx = 0; lx < parsedXhs.length; lx++) {
+
+        if (!preloadXhsDates[parsedXhs[lx].date]) {
+
+          mergedXhs.push(parsedXhs[lx]);
+
+        }
+
+      }
+
+      xhsData = xhsData.concat(mergedXhs);
+
+      xhsData.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+    } catch (e) { console.warn('merge XHS localStorage failed:', e); }
+
+  }
+
+
+
   saveXhs();
+
   loadPosts();
+
   insPosts = posts.slice();
+
   renderPosts();
+
 }
+
 init();
+
 </script>
+
 </body>
+
 </html>
+
