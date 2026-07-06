@@ -261,10 +261,22 @@ body{
     <div class="chart-empty-guide" id="chartGuide2" style="display:none;"></div>
   </div>
 
-  <!-- Data Table -->
+  <!-- Data Tables by Metric -->
   <div class="card">
-    <div class="card-header"><h3 id="tableTitle">每日记录</h3><span class="sub" id="recordCount"></span></div>
-    <div class="table-wrap" id="dsDataTable"></div>
+    <div class="card-header"><h3>观看量</h3><span class="sub" id="recordCountViews"></span></div>
+    <div class="table-wrap" id="tblViews"></div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-header"><h3>触达</h3><span class="sub" id="recordCountReach"></span></div>
+    <div class="table-wrap" id="tblReach"></div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-header"><h3>互动</h3><span class="sub" id="recordCountInteractions"></span></div>
+    <div class="table-wrap" id="tblInteractions"></div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-header"><h3>新增粉丝</h3><span class="sub" id="recordCountFollows"></span></div>
+    <div class="table-wrap" id="tblFollows"></div>
   </div>
 
   <!-- Top Posts -->
@@ -772,7 +784,6 @@ function updateLabels() {
   document.getElementById('chartFollowsTitle').textContent = L.lblFollows + '趋势';
   document.getElementById('chartAuxTitle').textContent = L.chartAux;
   document.getElementById('postsTitle').textContent = L.postsTitle;
-  document.getElementById('tableTitle').textContent = L.tableTitle;
   document.title = L.title;
 }
 
@@ -1183,25 +1194,67 @@ function renderCharts(filtered) {
 }
 
 function renderTable(filtered) {
-  var wrap = document.getElementById('dsDataTable');
-  var count = document.getElementById('recordCount');
   if (filtered.length === 0) {
-    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128203;</div><p>No data yet. Start by adding your first daily snapshot.</p></div>';
-    count.textContent = '0 records';
+    var emptyHtml = '<div class="empty-state"><div class="empty-icon">&#128203;</div><p>No data yet.</p></div>';
+    ['tblViews','tblReach','tblInteractions','tblFollows'].forEach(function(id) {
+      document.getElementById(id).innerHTML = emptyHtml;
+    });
+    ['recordCountViews','recordCountReach','recordCountInteractions','recordCountFollows'].forEach(function(id) {
+      document.getElementById(id).textContent = '0 records';
+    });
     return;
   }
-  count.textContent = filtered.length + ' record' + (filtered.length > 1 ? 's' : '');
-  var L = PLATFORM_LABELS[platform];
-  var rows = filtered.map(function(r) {
-    var fVal = (r.follows === null || r.follows === undefined)
-      ? '<span class="delay-text">延迟中</span>'
-      : r.follows.toLocaleString();
-    var tfVal = (r.total_followers !== null && r.total_followers !== undefined)
-      ? r.total_followers.toLocaleString()
-      : '<span class="delay-text">-</span>';
-    return '<tr><td>' + r.date + '</td><td class="num">' + r.views.toLocaleString() + '</td><td class="num">' + r.reach.toLocaleString() + '</td><td class="num">' + r.interactions.toLocaleString() + '</td><td class="num">' + r.linkClicks.toLocaleString() + '</td><td class="num">' + r.profileVisits.toLocaleString() + '</td><td class="num">' + fVal + '</td><td class="num">' + tfVal + '</td></tr>';
-  }).join('');
-  wrap.innerHTML = '<table class="data-table"><thead><tr><th>' + L.tableCols[0] + '</th><th>' + L.tableCols[1] + '</th><th>' + L.tableCols[2] + '</th><th>' + L.tableCols[3] + '</th><th>' + L.tableCols[4] + '</th><th>' + L.tableCols[5] + '</th><th>' + L.tableCols[6] + '</th><th>' + L.tableCols[7] + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  var sorted = [].concat(filtered).sort(function(a, b) { return a.date.localeCompare(b.date); });
+  var cmp = getComparisonData(sorted);
+  var isMonth = !!selectedMonth;
+  var cmpLabel = isMonth ? '上月' : '对比周期';
+
+  function pctChange(cur, prev) {
+    if (prev === null || prev === undefined || cur === null || cur === undefined) return null;
+    if (prev === 0 && cur === 0) return 0;
+    if (prev === 0) return 100;
+    return ((cur - prev) / prev * 100);
+  }
+  function fmtPct(val) {
+    if (val === null) return '<span class="delay-text">—</span>';
+    var cls = val > 0 ? 'up' : val < 0 ? 'down' : 'flat';
+    var arrow = val > 0 ? '&#9650;' : val < 0 ? '&#9660;' : '&#9644;';
+    return '<span class="change ' + cls + '">' + arrow + ' ' + (val > 0 ? '+' : '') + val.toFixed(1) + '%</span>';
+  }
+  function fmtVal(val, isFollow) {
+    if (val === null || val === undefined) return '<span class="delay-text">延迟中</span>';
+    return val.toLocaleString();
+  }
+
+  var metrics = [
+    { key: 'views',          label: '观看量',      cmpKey: 'views',          tblId: 'tblViews',           cntId: 'recordCountViews' },
+    { key: 'reach',          label: '触达',        cmpKey: 'reach',          tblId: 'tblReach',           cntId: 'recordCountReach' },
+    { key: 'interactions',   label: '互动',        cmpKey: 'interactions',   tblId: 'tblInteractions',    cntId: 'recordCountInteractions' },
+    { key: 'follows',        label: '新增粉丝',    cmpKey: 'follows',        tblId: 'tblFollows',         cntId: 'recordCountFollows' }
+  ];
+
+  metrics.forEach(function(m) {
+    var rows = '';
+    for (var i = 0; i < sorted.length; i++) {
+      var curVal = sorted[i][m.key];
+      var cmpRow = cmp[i];
+      var cmpVal = (cmpRow && cmpRow[m.cmpKey] !== null && cmpRow[m.cmpKey] !== undefined) ? cmpRow[m.cmpKey] : null;
+      // For follows, also check delay
+      var curDisplay = fmtVal(curVal, m.key === 'follows');
+      var cmpDisplay = (cmpVal !== null) ? cmpVal.toLocaleString() : '<span class="delay-text">—</span>';
+      var pct = pctChange(curVal, cmpVal);
+      // Skip pct for follows if either is delayed
+      var pctDisplay = (m.key === 'follows' && (curVal === null || curVal === undefined || cmpVal === null)) ? '<span class="delay-text">—</span>' : fmtPct(pct);
+      // Short date: MM/DD
+      var d = sorted[i].date;
+      var shortDate = d.substring(5, 7) + '/' + d.substring(8, 10);
+      rows += '<tr><td>' + shortDate + '</td><td class="num">' + curDisplay + '</td><td class="num">' + cmpDisplay + '</td><td class="num">' + pctDisplay + '</td></tr>';
+    }
+    var countStr = sorted.length + ' record' + (sorted.length > 1 ? 's' : '');
+    document.getElementById(m.cntId).textContent = countStr;
+    document.getElementById(m.tblId).innerHTML =
+      '<table class="data-table"><thead><tr><th>日期</th><th>本月值</th><th>' + cmpLabel + '</th><th>变化</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  });
 }
 
 function renderAnalysis(filtered) {
