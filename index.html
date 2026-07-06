@@ -230,11 +230,28 @@ body{
   </div>
   <div class="summary-row" id="summaryCards"></div>
 
-  <!-- Main Trend Chart -->
-  <div class="chart-box" id="chartBox1">
-    <h4 id="chartMainTitle">观看量 / 触达 / 互动趋势 + 新增粉丝</h4>
-    <div class="chart-wrap" id="chartWrap1"><canvas id="chartMain"></canvas></div>
-    <div class="chart-empty-guide" id="chartGuide1" style="display:none;"></div>
+  <!-- 观看量趋势 -->
+  <div class="chart-box">
+    <h4 id="chartViewsTitle">观看量趋势</h4>
+    <div class="chart-wrap" style="height:220px;"><canvas id="chartViews"></canvas></div>
+  </div>
+
+  <!-- 触达趋势 -->
+  <div class="chart-box">
+    <h4 id="chartReachTitle">触达趋势</h4>
+    <div class="chart-wrap" style="height:220px;"><canvas id="chartReach"></canvas></div>
+  </div>
+
+  <!-- 互动趋势 -->
+  <div class="chart-box">
+    <h4 id="chartInteractionsTitle">互动趋势</h4>
+    <div class="chart-wrap" style="height:220px;"><canvas id="chartInteractions"></canvas></div>
+  </div>
+
+  <!-- 新增粉丝趋势 -->
+  <div class="chart-box">
+    <h4 id="chartFollowsTitle">新增粉丝趋势</h4>
+    <div class="chart-wrap" style="height:220px;"><canvas id="chartFollows"></canvas></div>
   </div>
 
   <!-- Profile Visits Trend Chart -->
@@ -749,7 +766,10 @@ function updateLabels() {
   var L = PLATFORM_LABELS[platform];
   document.getElementById('pageTitle').textContent = L.title;
   document.getElementById('pageSub').textContent = L.sub;
-  document.getElementById('chartMainTitle').textContent = L.chartMain;
+  document.getElementById('chartViewsTitle').textContent = L.lblViews + '趋势';
+  document.getElementById('chartReachTitle').textContent = L.lblReach + '趋势';
+  document.getElementById('chartInteractionsTitle').textContent = L.lblInteractions + '趋势';
+  document.getElementById('chartFollowsTitle').textContent = L.lblFollows + '趋势';
   document.getElementById('chartAuxTitle').textContent = L.chartAux;
   document.getElementById('postsTitle').textContent = L.postsTitle;
   document.getElementById('tableTitle').textContent = L.tableTitle;
@@ -885,7 +905,7 @@ function renderPosts() {
   grid.innerHTML = html;
 }
 
-var chartMain = null, chartAux = null, chartAux2 = null;
+var chartViews = null, chartReach = null, chartInteractions = null, chartFollows = null, chartAux2 = null;
 
 function filterByPeriod() {
   if (data.length === 0) return [];
@@ -998,54 +1018,162 @@ function renderSummary(filtered) {
   }).join('');
 }
 
+function getComparisonData(sorted) {
+  if (sorted.length === 0) return [];
+  if (selectedMonth) {
+    var parts = selectedMonth.split('-');
+    var y = parseInt(parts[0]), m = parseInt(parts[1]);
+    if (m === 1) { y--; m = 12; } else { m--; }
+    var prevMonth = y + '-' + String(m).padStart(2, '0');
+    return sorted.map(function(r) {
+      var day = r.date.substring(8, 10);
+      var cmpDate = prevMonth + '-' + day;
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].date === cmpDate) return data[i];
+      }
+      return null;
+    });
+  } else {
+    return sorted.map(function(r) {
+      var d = new Date(r.date + 'T00:00:00');
+      d.setDate(d.getDate() - period);
+      var cmpDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].date === cmpDate) return data[i];
+      }
+      return null;
+    });
+  }
+}
+
 function renderCharts(filtered) {
   var L = PLATFORM_LABELS[platform];
-  var ctx1 = document.getElementById('chartMain');
-  if (chartMain) chartMain.destroy();
-  var ctx3 = document.getElementById('chartAux2');
-  if (chartAux2) chartAux2.destroy();
-  if (filtered.length === 0) {
-    return;
-  }
+
+  // Destroy all existing charts
+  if (chartViews) { chartViews.destroy(); chartViews = null; }
+  if (chartReach) { chartReach.destroy(); chartReach = null; }
+  if (chartInteractions) { chartInteractions.destroy(); chartInteractions = null; }
+  if (chartFollows) { chartFollows.destroy(); chartFollows = null; }
+  if (chartAux2) { chartAux2.destroy(); chartAux2 = null; }
+
+  if (filtered.length === 0) return;
 
   var sorted = [].concat(filtered).sort(function(a, b) { return a.date.localeCompare(b.date); });
   var labels = sorted.map(function(r) { return r.date; });
+  var cmp = getComparisonData(sorted);
 
-  chartMain = new Chart(ctx1.getContext('2d'), {
+  var isMonth = !!selectedMonth;
+  var curLabel = isMonth ? '本月' : '当前周期';
+  var cmpLabel = isMonth ? '上月' : '对比周期';
+
+  // ---- Chart 1: Views ----
+  var ctxViews = document.getElementById('chartViews');
+  var cmpViews = cmp.map(function(r) { return r ? r.views : null; });
+  chartViews = new Chart(ctxViews.getContext('2d'), {
     type: 'line',
     data: {
       labels: labels,
       datasets: [
-        { label: L.chartLegend[0], data: sorted.map(function(r) { return r.views; }), borderColor: '#6c5ce7', backgroundColor: 'rgba(108,92,231,0.06)', borderWidth: 3.5, pointRadius: 5, pointBackgroundColor: '#6c5ce7', tension: 0.3, fill: true, yAxisID: 'y' },
-        { label: L.chartLegend[1], data: sorted.map(function(r) { return r.reach; }), borderColor: '#fdcb6e', backgroundColor: 'rgba(253,203,110,0.04)', borderWidth: 3.5, pointRadius: 5, pointBackgroundColor: '#fdcb6e', tension: 0.3, fill: true, yAxisID: 'y' },
-        { label: L.chartLegend[2], data: sorted.map(function(r) { return r.interactions; }), borderColor: '#00cec9', backgroundColor: 'rgba(0,206,201,0.04)', borderWidth: 3.5, pointRadius: 5, pointBackgroundColor: '#00cec9', tension: 0.3, fill: true, yAxisID: 'y' },
-        { label: L.chartLegend[3], data: sorted.map(function(r) { return r.follows === null || r.follows === undefined ? null : r.follows; }), borderColor: '#9b59b6', backgroundColor: 'rgba(155,89,182,0.03)', borderWidth: 3.5, borderDash: [8, 4], pointRadius: 4, pointBackgroundColor: '#9b59b6', tension: 0.3, fill: false, yAxisID: 'y1' }
+        { label: curLabel, data: sorted.map(function(r) { return r.views; }), borderColor: '#6c5ce7', backgroundColor: 'rgba(108,92,231,0.08)', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#6c5ce7', tension: 0.3, fill: true },
+        { label: cmpLabel, data: cmpViews, borderColor: 'rgba(108,92,231,0.3)', borderWidth: 2, borderDash: [6, 3], pointRadius: 2, pointBackgroundColor: 'rgba(108,92,231,0.3)', tension: 0.3, fill: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 16, boxWidth: 10 } } },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 12, boxWidth: 10 } } },
       scales: {
         x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
-        y: { type: 'linear', position: 'left', title: { display: true, text: L.chartYTitle, color: '#4a4a6a' }, ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true },
-        y1: { type: 'linear', position: 'right', title: { display: true, text: L.chartY1Title, color: '#9b59b6' }, ticks: { color: '#9b59b6' }, grid: { drawOnChartArea: false }, beginAtZero: true }
+        y: { ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true }
       }
     }
   });
 
-  chartAux2 = new Chart(ctx3.getContext('2d'), {
+  // ---- Chart 2: Reach ----
+  var ctxReach = document.getElementById('chartReach');
+  var cmpReach = cmp.map(function(r) { return r ? r.reach : null; });
+  chartReach = new Chart(ctxReach.getContext('2d'), {
     type: 'line',
     data: {
       labels: labels,
       datasets: [
-        { label: L.chartAuxLegend[0], data: sorted.map(function(r) { return r.profileVisits; }), borderColor: '#a29bfe', backgroundColor: 'rgba(162,155,254,0.06)', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#a29bfe', tension: 0.3, fill: true }
+        { label: curLabel, data: sorted.map(function(r) { return r.reach; }), borderColor: '#fdcb6e', backgroundColor: 'rgba(253,203,110,0.08)', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#fdcb6e', tension: 0.3, fill: true },
+        { label: cmpLabel, data: cmpReach, borderColor: 'rgba(253,203,110,0.4)', borderWidth: 2, borderDash: [6, 3], pointRadius: 2, pointBackgroundColor: 'rgba(253,203,110,0.4)', tension: 0.3, fill: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 16, boxWidth: 10 } } },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 12, boxWidth: 10 } } },
+      scales: {
+        x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
+        y: { ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // ---- Chart 3: Interactions ----
+  var ctxInt = document.getElementById('chartInteractions');
+  var cmpInt = cmp.map(function(r) { return r ? r.interactions : null; });
+  chartInteractions = new Chart(ctxInt.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: curLabel, data: sorted.map(function(r) { return r.interactions; }), borderColor: '#00cec9', backgroundColor: 'rgba(0,206,201,0.06)', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#00cec9', tension: 0.3, fill: true },
+        { label: cmpLabel, data: cmpInt, borderColor: 'rgba(0,206,201,0.35)', borderWidth: 2, borderDash: [6, 3], pointRadius: 2, pointBackgroundColor: 'rgba(0,206,201,0.35)', tension: 0.3, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 12, boxWidth: 10 } } },
+      scales: {
+        x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
+        y: { ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // ---- Chart 4: Follows ----
+  var ctxFlw = document.getElementById('chartFollows');
+  var cmpFlw = cmp.map(function(r) { return (r && r.follows !== null && r.follows !== undefined) ? r.follows : null; });
+  chartFollows = new Chart(ctxFlw.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: curLabel, data: sorted.map(function(r) { return (r.follows === null || r.follows === undefined) ? null : r.follows; }), borderColor: '#9b59b6', backgroundColor: 'rgba(155,89,182,0.06)', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#9b59b6', tension: 0.3, fill: true },
+        { label: cmpLabel, data: cmpFlw, borderColor: 'rgba(155,89,182,0.35)', borderWidth: 2, borderDash: [6, 3], pointRadius: 2, pointBackgroundColor: 'rgba(155,89,182,0.35)', tension: 0.3, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 12, boxWidth: 10 } } },
+      scales: {
+        x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
+        y: { ticks: { color: '#8e8ea0' }, grid: { color: '#e5e7eb' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // ---- Chart 5: Profile Visits (chartAux2) ----
+  var ctxAux = document.getElementById('chartAux2');
+  var cmpPV = cmp.map(function(r) { return r ? r.profileVisits : null; });
+  chartAux2 = new Chart(ctxAux.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: curLabel, data: sorted.map(function(r) { return r.profileVisits; }), borderColor: '#a29bfe', backgroundColor: 'rgba(162,155,254,0.08)', borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#a29bfe', tension: 0.3, fill: true },
+        { label: cmpLabel, data: cmpPV, borderColor: 'rgba(162,155,254,0.35)', borderWidth: 2, borderDash: [6, 3], pointRadius: 2, pointBackgroundColor: 'rgba(162,155,254,0.35)', tension: 0.3, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#4a4a6a', usePointStyle: true, padding: 12, boxWidth: 10 } } },
       scales: {
         x: { ticks: { color: '#8e8ea0', maxRotation: 45 }, grid: { color: '#e5e7eb' } },
         y: { ticks: { color: '#8e8ea0', callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }, grid: { color: '#e5e7eb' }, beginAtZero: true }
